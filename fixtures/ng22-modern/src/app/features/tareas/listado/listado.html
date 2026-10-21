@@ -1,0 +1,35 @@
+<header class="cabecera">
+  <h1>Tareas</h1>
+  <a matButton="filled" routerLink="nueva">
+    <svg lucidePlus></svg>
+    Nueva tarea
+  </a>
+</header>
+
+<mat-button-toggle-group [value]="store.filtro()" (change)="store.filtrar($event.value)">
+  @for (filtro of filtros; track filtro.valor) {
+    <mat-button-toggle [value]="filtro.valor">{{ filtro.etiqueta }}</mat-button-toggle>
+  }
+</mat-button-toggle-group>
+
+@let lista = tareas.value();
+@let hechas = lista.filter((t) => t.estado === 'hecha').length;
+<p class="resumen">
+  {{ hechas }} de {{ lista.length }} hechas · {{ store.totalSeleccionadas() }} seleccionadas
+</p>
+
+@if (tareas.isLoading()) {
+  <p class="resumen">Cargando…</p>
+} @else {
+  <ul class="lista">
+    @for (tarea of lista; track tarea.id) {
+      <li [class]="{ ...claseBase, 'lista__item--hecha': tarea.estado === 'hecha' }">
+        <mat-checkbox [checked]="store.seleccion().has(tarea.id)" (change)="store.alternar(tarea.id)" />
+        <a [routerLink]="[tarea.id]">{{ tarea.titulo }}</a>
+        <app-estado-chip [estado]="tarea.estado" />
+      </li>
+    } @empty {
+      <li class="lista__vacia">No hay tareas con este filtro.</li>
+    }
+  </ul>
+}

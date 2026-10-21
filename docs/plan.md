@@ -95,20 +95,20 @@ const ok = await this.confirm.ask({ titulo: '¿Eliminar?', mensaje: … });
 
 #### Matriz de cobertura de fixtures
 
-✔ forma propia o fachada · ● uso directo de la librería · — sin cobertura · **2.5/2.6** se agrega en esa tarea.
+✔ forma propia o fachada · ● uso directo de la librería · — sin cobertura · **2.6** se agrega en esa tarea.
 
 | Necesidad | ng12-modules | ng17-wrappers | ng21-ao | ng-multi | ng22-modern |
 |---|---|---|---|---|---|
-| Iconos | ● `mat-icon` con ligaduras | — → **2.6** `provideNzIcons` | ● lucide-angular `[img]` | — | **2.5** |
+| Iconos | ● `mat-icon` con ligaduras | — → **2.6** `provideNzIcons` | ● lucide-angular `[img]` | — | ✔ `@lucide/angular`, directivas importadas por componente (`<svg lucidePlus>`) |
 | Modales | ● `MatDialog` + `MAT_DIALOG_DATA` + `afterClosed` | — | ● `nz-popconfirm`; ✔ `ConfirmService` → **2.6** | ● `prompt()` (antipatrón) | — |
-| Notificaciones/errores | interceptor de auth (sin errores) | — → **2.6** interceptor de errores + `NotificacionesService` + `HttpContextToken` | — | — | — |
-| Formularios | ● reactive sin tipar, `FormBuilder` + `new FormControl`; ✔ layout `app-field` | ● reactive tipados (`nonNullable`), `ngModel` en reportes, catálogos por servicio; ✔ layout `mimi-*`; validador propio → **2.6** | ● reactive tipados, layout `nz-form-item` | — | **2.5** Signal Forms |
-| API | ● `HttpClient` + `environment`; ✔ clase base + wrapper `{ data }` → **2.6** | ● `HttpClient` + `environment.apiUrl`, modelos en el servicio | ● `HttpClient`, URL constante, modelos en `data-access/` | ● `HttpClient`, URL constante | **2.5** `httpResource` |
-| Estado | — | — → **2.6** `signalStore` | signals locales + `rxResource` | — | — |
+| Notificaciones/errores | interceptor de auth (sin errores) | — → **2.6** interceptor de errores + `NotificacionesService` + `HttpContextToken` | — | — | ✔ fachada `Notificaciones` (`@Service`) sobre `MatSnackBar` en 3 sitios, 1 excepción directa; sin interceptor de errores ("no detectado") |
+| Formularios | ● reactive sin tipar, `FormBuilder` + `new FormControl`; ✔ layout `app-field` | ● reactive tipados (`nonNullable`), `ngModel` en reportes, catálogos por servicio; ✔ layout `mimi-*`; validador propio → **2.6** | ● reactive tipados, layout `nz-form-item` | — | ● Signal Forms (`form`, `[formField]`, `submit`); ✔ validador propio `fechaFutura`; layout `mat-form-field` |
+| API | ● `HttpClient` + `environment`; ✔ clase base + wrapper `{ data }` → **2.6** | ● `HttpClient` + `environment.apiUrl`, modelos en el servicio | ● `HttpClient`, URL constante, modelos en `data-access/` | ● `HttpClient`, URL constante | ● `httpResource` para lecturas (mayoría) + `HttpClient` para escrituras; URL por `InjectionToken` `API_URL` |
+| Estado | — | — → **2.6** `signalStore` | signals locales + `rxResource` | — | ✔ `TareasStore` con signals (`@Service`, sin NgRx) |
 | Auth/guards | guard de clase + interceptor de auth | guard funcional con `inject()` | — | — | — |
 | Tablas | ● `mat-table` + filtro en cliente | — | ✔ `custom-table` (paginación en cliente); servidor → **2.6** | — | — |
-| Estilos | `::ng-deep .mat-*` en `app-field`/`app-card` + tema SCSS | `::ng-deep .ant-*` solo en los wrappers | `theme.less` + Tailwind `@theme` | CSS por componente | — |
-| Entornos | `environment` + `fileReplacements` | `environment.ts` sin reemplazos | — (URLs constantes) | — | — |
+| Estilos | `::ng-deep .mat-*` en `app-field`/`app-card` + tema SCSS | `::ng-deep .ant-*` solo en los wrappers | `theme.less` + Tailwind `@theme` | CSS por componente | tema `mat.theme` (Material 22) + variables CSS |
+| Entornos | `environment` + `fileReplacements` | `environment.ts` sin reemplazos | — (URLs constantes) | — | — (URL por `InjectionToken`) |
 
 ### Regla de capas (lo que resuelve el proyecto A frente al proyecto B)
 

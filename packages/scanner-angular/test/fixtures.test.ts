@@ -4,7 +4,12 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
 const FIXTURES_DIR = fileURLToPath(new URL('../../../fixtures/', import.meta.url));
-const FIXTURES = ['ng-multi', 'ng12-modules', 'ng17-wrappers', 'ng21-ao'];
+const FIXTURES = ['ng-multi', 'ng12-modules', 'ng17-wrappers', 'ng21-ao', 'ng22-modern'];
+
+const tsFiles = (fixture: string): string[] =>
+  readdirSync(join(FIXTURES_DIR, fixture, 'src'), { recursive: true })
+    .map(String)
+    .filter((f) => f.endsWith('.ts'));
 
 const read = (fixture: string, file: string): string =>
   readFileSync(join(FIXTURES_DIR, fixture, file), 'utf8');
@@ -47,13 +52,19 @@ describe('ng12-modules', () => {
   });
 
   it('ningún .ts declara la propiedad standalone', () => {
-    const files = readdirSync(join(FIXTURES_DIR, 'ng12-modules', 'src'), { recursive: true })
-      .map(String)
-      .filter((f) => f.endsWith('.ts'));
+    const files = tsFiles('ng12-modules');
     expect(files.length).toBeGreaterThan(0);
     for (const file of files) {
       expect(read('ng12-modules', join('src', file)), file).not.toMatch(/\bstandalone\s*:/);
     }
+  });
+});
+
+describe('ng22-modern', () => {
+  it('declara servicios con @Service() y nunca con @Injectable()', () => {
+    const sources = tsFiles('ng22-modern').map((f) => read('ng22-modern', join('src', f)));
+    expect(sources.some((s) => /@Service\(/.test(s))).toBe(true);
+    expect(sources.some((s) => /@Injectable\(/.test(s))).toBe(false);
   });
 });
 

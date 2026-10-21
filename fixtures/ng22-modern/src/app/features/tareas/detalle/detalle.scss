@@ -1,0 +1,20 @@
+.detalle {
+  padding: var(--mimi-espacio);
+  border-radius: var(--mimi-radio);
+  background: var(--mat-sys-surface-container);
+}
+
+.detalle__cabecera {
+  display: flex;
+  align-items: center;
+  gap: var(--mimi-espacio);
+}
+
+.detalle__vence {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.detalle__acciones {
+  display: flex;
+  gap: 8px;
+}

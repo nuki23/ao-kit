@@ -1,0 +1,30 @@
+.cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.resumen {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.lista {
+  padding: 0;
+  list-style: none;
+}
+
+.lista__item {
+  display: flex;
+  align-items: center;
+  gap: var(--mimi-espacio);
+  padding: 8px 0;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.lista__item--hecha a {
+  text-decoration: line-through;
+}
+
+.lista__vacia {
+  padding: var(--mimi-espacio) 0;
+}

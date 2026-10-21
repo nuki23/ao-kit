@@ -41,7 +41,7 @@ fixtures/            sintéticos; cada uno con README.md y expected.json (orácu
   ng12-modules/      NgModules, Angular Material, loadChildren con módulo, SCSS
   ng17-wrappers/     como el proyecto A (Angular 17 standalone con wrappers de ng-zorro): APIs viejas, @Input, constructor DI, wrappers mimi-* con ng-content + ::ng-deep
   ng21-ao/           como el proyecto B (Angular 21 con skill angular-ao): signals, inject(), shared components, showcase /ejemplos
-  ng22-modern/       @Service, Signal Forms, httpResource, OnPush por defecto, @switch      (2.5, pendiente)
+  ng22-modern/       @Service, Signal Forms, httpResource, OnPush por defecto, @switch con @default never
   ng-multi/          angular.json con 2 apps (standalone y NgModules) + librería interna; duplicados
 docs/plan.md
 ```

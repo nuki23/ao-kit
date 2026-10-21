@@ -1,0 +1,17 @@
+@let e = estado();
+@switch (e) {
+  @case ('pendiente')
+  @case ('en-curso') {
+    <span class="chip chip--abierta">
+      <svg lucideCircleDot class="chip__icono"></svg>
+      {{ e === 'pendiente' ? 'Pendiente' : 'En curso' }}
+    </span>
+  }
+  @case ('hecha') {
+    <span class="chip chip--hecha">
+      <svg lucideCircleCheck class="chip__icono"></svg>
+      Hecha
+    </span>
+  }
+  @default never;
+}

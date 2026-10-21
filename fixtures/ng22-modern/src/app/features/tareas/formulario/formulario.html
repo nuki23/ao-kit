@@ -1,0 +1,44 @@
+<h1>{{ id() ? 'Editar tarea' : 'Nueva tarea' }}</h1>
+
+<form class="formulario" novalidate (submit)="$event.preventDefault(); guardar()">
+  <mat-form-field appearance="outline">
+    <mat-label>Título</mat-label>
+    <input matInput [formField]="form.titulo" />
+    @for (error of form.titulo().errors(); track error.kind) {
+      <mat-error>{{ error.message }}</mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Descripción</mat-label>
+    <textarea matInput rows="3" [formField]="form.descripcion"></textarea>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Categoría</mat-label>
+    <mat-select [formField]="form.categoriaId">
+      @for (categoria of categorias.value(); track categoria.id) {
+        <mat-option [value]="categoria.id">{{ categoria.nombre }}</mat-option>
+      }
+    </mat-select>
+    @for (error of form.categoriaId().errors(); track error.kind) {
+      <mat-error>{{ error.message }}</mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Vence</mat-label>
+    <input matInput type="date" [formField]="form.vence" />
+    @for (error of form.vence().errors(); track error.kind) {
+      <mat-error>{{ error.message }}</mat-error>
+    }
+  </mat-form-field>
+
+  <div class="formulario__acciones">
+    <a matButton routerLink="/tareas">Cancelar</a>
+    <button matButton="filled" type="submit" [disabled]="form().invalid()">
+      <svg lucideCheck></svg>
+      Guardar
+    </button>
+  </div>
+</form>

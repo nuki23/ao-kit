@@ -1,0 +1,124 @@
+{
+  "$comment": "Oráculo de lo que ao scan debe detectar en este fixture. Formato informal hasta congelar el esquema de index.json (3.1); los detectores de M4 lo usan como referencia. Rutas relativas al fixture, en POSIX. Conteos sacados con grep (ver nota de M4 en TASKS.md). El fixture compila con ngc 22.2.3 (strictTemplates).",
+  "stack": {
+    "angularVersion": "22",
+    "builder": "@angular/build:application",
+    "bootstrap": "bootstrapApplication",
+    "projectStructure": "standalone",
+    "zoneless": true,
+    "uiLibraries": [{ "name": "@angular/material", "prefixes": ["mat-"], "variant": "mdc" }],
+    "icons": "@lucide/angular",
+    "styles": "scss",
+    "theme": "src/styles.scss (mat.theme)",
+    "aliases": {
+      "@core/*": "src/app/core/*",
+      "@shared/*": "src/app/shared/*"
+    }
+  },
+  "conventions": {
+    "standalone": { "standalone": 5, "total": 5, "explicitFlag": 0, "$comment": "implícito (default desde v19)" },
+    "changeDetection": {
+      "onPush": 4,
+      "eager": 1,
+      "explicit": ["src/app/shared/estado-chip/estado-chip.ts (Eager)"],
+      "$comment": "4 componentes sin changeDetection: en v22 el default es OnPush"
+    },
+    "services": { "serviceDecorator": 3, "injectable": 0, "majority": "@Service" },
+    "di": { "constructor": 0, "inject": 6, "majority": "inject" },
+    "inputs": { "decorator": 0, "signal": 3, "majority": "signal" },
+    "controlFlow": { "structuralDirectives": 0, "blocks": 20, "majority": "blocks", "$comment": "blocks cuenta @if/@else/@for/@empty/@switch/@case/@default y los 3 @let" },
+    "fileNaming": "kebab-case.ts sin sufijo (listado.ts, tareas-api.ts, clase Listado / TareasApi)",
+    "featureLayout": "features/<feature>/{listado,detalle,formulario,data-access,validators}"
+  },
+  "templateSyntax": {
+    "$comment": "Sintaxis de template nueva usada en el fixture (todas parsean y compilan con 22.2.3)",
+    "switchGroupedCases": {
+      "since": "22",
+      "file": "src/app/shared/estado-chip/estado-chip.html",
+      "detail": "@case ('pendiente') sin cuerpo + @case ('en-curso') { … } forman un solo grupo con 2 casos"
+    },
+    "switchExhaustiveDefaultNever": {
+      "since": "22",
+      "file": "src/app/shared/estado-chip/estado-chip.html",
+      "detail": "@default never; sobre la unión EstadoTarea; el type-check genera const …: never = valor",
+      "requires": "una expresión estrechable: @let e = estado(); @switch (e). Con @switch (estado()) el chequeo falla aunque estén todos los casos, porque TypeScript no estrecha llamadas"
+    },
+    "arrowFunctions": { "file": "src/app/features/tareas/listado/listado.html", "detail": "@let hechas = lista.filter((t) => t.estado === 'hecha').length" },
+    "objectSpread": { "file": "src/app/features/tareas/listado/listado.html", "detail": "[class]=\"{ ...claseBase, 'lista__item--hecha': … }\"" },
+    "letDeclarations": 3
+  },
+  "components": [
+    { "selector": "app-estado-chip", "source": "src/app/shared/estado-chip/", "kind": "component", "inputs": ["estado"], "requiredInputs": ["estado"], "changeDetection": "Eager" }
+  ],
+  "usages": {
+    "app-estado-chip": {
+      "count": 2,
+      "files": [
+        "src/app/features/tareas/detalle/detalle.html",
+        "src/app/features/tareas/listado/listado.html"
+      ]
+    }
+  },
+  "patterns": {
+    "api": {
+      "approach": "httpResource",
+      "evidence": [
+        { "form": "httpResource (lecturas)", "files": 3, "calls": 4, "where": ["src/app/features/tareas/detalle/detalle.ts", "src/app/features/tareas/formulario/formulario.ts", "src/app/features/tareas/listado/listado.ts"] },
+        { "form": "HttpClient (escrituras: post, put, delete)", "files": 1, "where": ["src/app/features/tareas/data-access/tareas-api.ts"] }
+      ],
+      "urlOrigin": { "kind": "InjectionToken", "token": "API_URL", "source": "src/app/core/api-url.ts", "providedIn": "src/app/app.config.ts" },
+      "models": "src/app/features/tareas/data-access/tarea.model.ts",
+      "interceptors": [],
+      "exceptions": []
+    },
+    "formularios": {
+      "approach": "signal-forms",
+      "evidence": [{ "file": "src/app/features/tareas/formulario/formulario.ts", "detail": "form(modelo, schema), [formField] x4, required, minLength, submit()" }],
+      "customValidators": [{ "name": "fechaFutura", "source": "src/app/features/tareas/validators/fecha-futura.ts", "kind": "fechaFutura", "uses": 1 }],
+      "fieldLayout": "mat-form-field + mat-error por cada error de field().errors()",
+      "catalogs": "httpResource de categorías dentro del formulario",
+      "exceptions": []
+    },
+    "notificaciones": {
+      "approach": "facade",
+      "facade": { "name": "Notificaciones", "source": "src/app/core/notificaciones.ts", "wraps": "MatSnackBar", "decorator": "@Service" },
+      "evidence": [
+        { "uses": "Notificaciones", "files": 3, "where": ["src/app/features/tareas/detalle/detalle.ts", "src/app/features/tareas/formulario/formulario.ts", "src/app/features/tareas/listado/listado.ts"] },
+        { "uses": "MatSnackBar directo (fuera de la fachada)", "files": 1 }
+      ],
+      "exceptions": [{ "file": "src/app/app.ts", "detail": "aviso global de sin conexión con MatSnackBar.open" }],
+      "errorInterceptor": null
+    },
+    "estado": {
+      "approach": "signals-service",
+      "facade": { "name": "TareasStore", "source": "src/app/features/tareas/data-access/tareas-store.ts", "decorator": "@Service" },
+      "evidence": [{ "file": "src/app/features/tareas/data-access/tareas-store.ts", "detail": "signal + asReadonly + computed; sin NgRx" }, { "usedIn": ["src/app/features/tareas/listado/listado.ts"] }],
+      "exceptions": []
+    },
+    "iconos": {
+      "approach": "per-component-directives",
+      "library": "@lucide/angular",
+      "registration": "cada componente importa las directivas de sus íconos (imports: [LucidePlus, …])",
+      "syntax": "<svg lucidePlus></svg>",
+      "evidence": [{ "icons": 8, "uses": 8, "components": 5 }],
+      "exceptions": []
+    }
+  },
+  "recommendationsNotDetected": [
+    { "need": "notificaciones", "missing": "interceptor de errores HTTP", "$comment": "prioridad alta sin evidencia: va a recommendations.md como 'no detectado', no a patterns (6.1)" }
+  ],
+  "routes": [
+    { "path": "", "redirectTo": "tareas" },
+    {
+      "path": "tareas",
+      "loadChildren": "src/app/features/tareas/tareas.routes.ts#TAREAS_ROUTES",
+      "children": [
+        { "path": "", "loadComponent": "src/app/features/tareas/listado/listado.ts#Listado" },
+        { "path": "nueva", "loadComponent": "src/app/features/tareas/formulario/formulario.ts#Formulario" },
+        { "path": ":id", "loadComponent": "src/app/features/tareas/detalle/detalle.ts#Detalle" },
+        { "path": ":id/editar", "loadComponent": "src/app/features/tareas/formulario/formulario.ts#Formulario" }
+      ]
+    },
+    { "path": "**", "redirectTo": "tareas" }
+  ]
+}

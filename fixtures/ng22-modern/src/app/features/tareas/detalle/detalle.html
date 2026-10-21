@@ -1,0 +1,30 @@
+<a matButton routerLink="/tareas">
+  <svg lucideArrowLeft></svg>
+  Volver
+</a>
+
+@if (tarea.value(); as t) {
+  <article class="detalle">
+    <header class="detalle__cabecera">
+      <h1>{{ t.titulo }}</h1>
+      <app-estado-chip [estado]="t.estado" />
+    </header>
+    <p>{{ t.descripcion }}</p>
+    <p class="detalle__vence">Vence el {{ t.vence }}</p>
+
+    <div class="detalle__acciones">
+      <a matButton="outlined" [routerLink]="['/tareas', t.id, 'editar']">
+        <svg lucidePencil></svg>
+        Editar
+      </a>
+      <button matButton="filled" type="button" (click)="eliminar()">
+        <svg lucideTrash></svg>
+        Eliminar
+      </button>
+    </div>
+  </article>
+} @else if (tarea.isLoading()) {
+  <p>Cargando…</p>
+} @else {
+  <p>No encontramos esta tarea.</p>
+}

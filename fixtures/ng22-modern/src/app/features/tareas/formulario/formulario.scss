@@ -1,0 +1,11 @@
+.formulario {
+  display: grid;
+  gap: 4px;
+  max-width: 560px;
+}
+
+.formulario__acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
