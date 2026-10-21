@@ -95,20 +95,36 @@ const ok = await this.confirm.ask({ titulo: '¿Eliminar?', mensaje: … });
 
 #### Matriz de cobertura de fixtures
 
-✔ forma propia o fachada · ● uso directo de la librería · — sin cobertura · **2.6** se agrega en esa tarea.
+✔ forma propia o fachada · ● uso directo de la librería · — sin cobertura.
 
 | Necesidad | ng12-modules | ng17-wrappers | ng21-ao | ng-multi | ng22-modern |
 |---|---|---|---|---|---|
-| Iconos | ● `mat-icon` con ligaduras | — → **2.6** `provideNzIcons` | ● lucide-angular `[img]` | — | ✔ `@lucide/angular`, directivas importadas por componente (`<svg lucidePlus>`) |
-| Modales | ● `MatDialog` + `MAT_DIALOG_DATA` + `afterClosed` | — | ● `nz-popconfirm`; ✔ `ConfirmService` → **2.6** | ● `prompt()` (antipatrón) | — |
-| Notificaciones/errores | interceptor de auth (sin errores) | — → **2.6** interceptor de errores + `NotificacionesService` + `HttpContextToken` | — | — | ✔ fachada `Notificaciones` (`@Service`) sobre `MatSnackBar` en 3 sitios, 1 excepción directa; sin interceptor de errores ("no detectado") |
-| Formularios | ● reactive sin tipar, `FormBuilder` + `new FormControl`; ✔ layout `app-field` | ● reactive tipados (`nonNullable`), `ngModel` en reportes, catálogos por servicio; ✔ layout `mimi-*`; validador propio → **2.6** | ● reactive tipados, layout `nz-form-item` | — | ● Signal Forms (`form`, `[formField]`, `submit`); ✔ validador propio `fechaFutura`; layout `mat-form-field` |
-| API | ● `HttpClient` + `environment`; ✔ clase base + wrapper `{ data }` → **2.6** | ● `HttpClient` + `environment.apiUrl`, modelos en el servicio | ● `HttpClient`, URL constante, modelos en `data-access/` | ● `HttpClient`, URL constante | ● `httpResource` para lecturas (mayoría) + `HttpClient` para escrituras; URL por `InjectionToken` `API_URL` |
-| Estado | — | — → **2.6** `signalStore` | signals locales + `rxResource` | — | ✔ `TareasStore` con signals (`@Service`, sin NgRx) |
+| Iconos | ● `mat-icon` con ligaduras | ✔ registro estático `NzIconModule.forRoot(ICONOS)` + `<span nz-icon>` | ● lucide-angular `[img]` | — | ✔ `@lucide/angular`, directivas importadas por componente (`<svg lucidePlus>`) |
+| Modales | ● `MatDialog` + `MAT_DIALOG_DATA` + `afterClosed` | — | ✔ `ConfirmService` sobre `NzModalService` (`nzData`, resultado por `close`) en 2 sitios; 1 excepción directa | ● `prompt()` (antipatrón) | — |
+| Notificaciones/errores | ● `MatSnackBar` directo; interceptor de auth (sin errores) | ✔ fachada `NotificacionesService` sobre `NzMessageService` + interceptor de errores + `HttpContextToken` para suprimirlo | — | — | ✔ fachada `Notificaciones` (`@Service`) sobre `MatSnackBar` en 3 sitios, 1 excepción directa; sin interceptor de errores ("no detectado") |
+| Formularios | ● reactive sin tipar, `FormBuilder` + `new FormControl`; ✔ layout `app-field` | ● reactive tipados (`nonNullable`), `ngModel` en reportes, catálogos por servicio; ✔ layout `mimi-*` y validador propio `noSoloEspacios` | ● reactive tipados, layout `nz-form-item` | — | ● Signal Forms (`form`, `[formField]`, `submit`); ✔ validador propio `fechaFutura`; layout `mat-form-field` |
+| API | ✔ clase base `ApiService` + wrapper `RespuestaApi { data, meta }`; ● `PedidosService` con `HttpClient` directo (excepción) | ● `HttpClient` + `environment.apiUrl`, modelos en el servicio; interceptor de errores y `HttpContext` | ● `HttpClient`, URL constante, modelos en `data-access/`, respuesta `Pagina<T>` | ● `HttpClient`, URL constante | ● `httpResource` para lecturas (mayoría) + `HttpClient` para escrituras; URL por `InjectionToken` `API_URL` |
+| Estado | — | ✔ `SolicitudesStore` con `@ngrx/signals` (`signalStore`) | signals locales + `rxResource` | — | ✔ `TareasStore` con signals (`@Service`, sin NgRx) |
 | Auth/guards | guard de clase + interceptor de auth | guard funcional con `inject()` | — | — | — |
-| Tablas | ● `mat-table` + filtro en cliente | — | ✔ `custom-table` (paginación en cliente); servidor → **2.6** | — | — |
+| Tablas | ● `mat-table` + filtro en cliente | — | ✔ `custom-table`: paginación en servidor en el listado y en cliente en `/ejemplos` | — | — |
 | Estilos | `::ng-deep .mat-*` en `app-field`/`app-card` + tema SCSS | `::ng-deep .ant-*` solo en los wrappers | `theme.less` + Tailwind `@theme` | CSS por componente | tema `mat.theme` (Material 22) + variables CSS |
 | Entornos | `environment` + `fileReplacements` | `environment.ts` sin reemplazos | — (URLs constantes) | — | — (URL por `InjectionToken`) |
+
+Criterio de aceptación de 2.6 (cada necesidad de prioridad alta con un fixture de forma propia y otro de uso directo):
+
+| Necesidad | Forma propia | Uso directo |
+|---|---|---|
+| Iconos | ng17-wrappers, ng22-modern | ng12-modules, ng21-ao |
+| Modales | ng21-ao | ng12-modules |
+| Notificaciones/errores | ng17-wrappers, ng22-modern | ng12-modules |
+| Formularios | ng12-modules, ng17-wrappers, ng22-modern | ng21-ao (y los reactive de ng12/ng17) |
+| API | ng12-modules | ng17-wrappers, ng21-ao, ng-multi, ng22-modern |
+
+#### Verificación con compilación real (`pnpm fixtures:verify`)
+
+El parser de `@angular/compiler` confirma que los templates son válidos, pero no que el código compile. `pnpm fixtures:verify` copia cada fixture a un directorio temporal fuera del repo, instala sus dependencias y lo compila con su propia versión de Angular (`ngc` con `strictTemplates`; en ng-multi, antes `ng build` de la librería con ng-packagr, así que el alias a `dist` se prueba de verdad). ng21-ao, ng-multi y ng22-modern deben compilar; ng17-wrappers se intenta y, si falla por la versión de Node, sale como "omitido por versión"; ng12-modules queda excluido por decisión y solo se analiza con el parser. Corre a mano y una vez por semana en CI (`verify-fixtures.yml`), no en cada PR, porque instala de npm y tarda varios minutos.
+
+**Decisión de determinismo.** Las dependencias directas de cada fixture van con **versión exacta** (sin `^` ni `~`, por ejemplo `"@angular/core": "22.2.3"`) y **sin lockfile**. Son las versiones con las que el fixture compiló al fijarlas (en ng12-modules, que no se compila, la más alta de su rango). Las dependencias transitivas sí pueden moverse entre corridas; si una rompe la verificación semanal, es una señal útil, no ruido. Actualizar una versión es un cambio explícito con su propio commit. Se descartó un lockfile por fixture: agrega mucho peso al repo y contradice que los fixtures se escaneen sin instalar nada. Los `peerDependencies` de la librería de ng-multi siguen como rangos porque declaran compatibilidad, no lo que se instala.
 
 ### Regla de capas (lo que resuelve el proyecto A frente al proyecto B)
 

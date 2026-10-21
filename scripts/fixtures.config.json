@@ -1,0 +1,29 @@
+{
+  "$comment": "Cómo verifica `pnpm fixtures:verify` cada fixture. mode: compile (debe compilar), try (si falla por la versión de Node se reporta como omitido), parser-only (no se instala; solo lo analiza el parser).",
+  "fixtures": {
+    "ng-multi": {
+      "mode": "compile",
+      "steps": [
+        "npx ng build acme-ui",
+        "npx ngc -p projects/portal/tsconfig.app.json --noEmit",
+        "npx ngc -p projects/backoffice/tsconfig.app.json --noEmit"
+      ]
+    },
+    "ng12-modules": {
+      "mode": "parser-only",
+      "reason": "excluido por decisión (TASKS 2.7): Angular 12 está fuera de soporte; solo se analiza con el parser"
+    },
+    "ng17-wrappers": {
+      "mode": "try",
+      "steps": ["npx ngc -p tsconfig.app.json --noEmit"]
+    },
+    "ng21-ao": {
+      "mode": "compile",
+      "steps": ["npx ngc -p tsconfig.app.json --noEmit"]
+    },
+    "ng22-modern": {
+      "mode": "compile",
+      "steps": ["npx ngc -p tsconfig.app.json --noEmit"]
+    }
+  }
+}

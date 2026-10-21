@@ -16,6 +16,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "changeset": "changeset",
+    "fixtures:verify": "node scripts/verify-fixtures.mjs",
     "ao": "node packages/cli/dist/index.js"
   },
   "devDependencies": {

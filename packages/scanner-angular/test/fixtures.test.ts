@@ -27,6 +27,30 @@ describe.each(FIXTURES)('fixture %s', (fixture) => {
   it('trae un expected.json válido', () => {
     expect(() => JSON.parse(read(fixture, 'expected.json')) as unknown).not.toThrow();
   });
+
+  it('fija versiones exactas en sus dependencias directas', () => {
+    const pkg = JSON.parse(read(fixture, 'package.json')) as Record<
+      string,
+      Record<string, string> | undefined
+    >;
+    const deps = { ...pkg['dependencies'], ...pkg['devDependencies'] };
+    const inexact = Object.entries(deps).filter(([, v]) => !/^\d+\.\d+\.\d+(-[\w.]+)?$/.test(v));
+    expect(inexact).toEqual([]);
+  });
+});
+
+describe('scripts/fixtures.config.json', () => {
+  it('cubre exactamente las carpetas de fixtures/', () => {
+    const config = JSON.parse(
+      readFileSync(new URL('../../../scripts/fixtures.config.json', import.meta.url), 'utf8'),
+    ) as { fixtures: Record<string, unknown> };
+    const dirs = readdirSync(FIXTURES_DIR, { withFileTypes: true })
+      .filter((d) => d.isDirectory())
+      .map((d) => d.name)
+      .sort();
+    expect(Object.keys(config.fixtures).sort()).toEqual(dirs);
+    expect([...FIXTURES].sort()).toEqual(dirs);
+  });
 });
 
 describe('ng-multi', () => {

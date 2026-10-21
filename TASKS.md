@@ -23,15 +23,22 @@ Proyecto A: Angular 17 standalone con wrappers de ng-zorro. Proyecto B: Angular 
 - [x] 2.3 `fixtures/ng12-modules`: app Angular 12 con NgModules (declarations/exports/imports), Angular Material (`mat-*`), rutas con `loadChildren` a módulo (`import(...).then(m => m.XModule)`) y SCSS.
 - [x] 2.4 `fixtures/ng-multi`: `angular.json` con 2 aplicaciones + 1 librería interna (`projects/<lib>`, consumida vía alias de tsconfig), cada una con su `sourceRoot` y `prefix`.
 - [x] 2.5 `fixtures/ng22-modern`: Angular 22 con `@Service`, Signal Forms, `httpResource`, componentes sin `changeDetection` (OnPush por defecto en v22) y uno con `ChangeDetectionStrategy.Eager`; templates con arrow functions, spread y `@switch` de v22 (`@case` agrupados y `@default never`); builder `@angular/build:application`. Cubre además los patrones por necesidad de v22: api (`httpResource` + `HttpClient` para escrituras), formularios (Signal Forms + validador propio), notificaciones (fachada `@Service` sobre `MatSnackBar`), estado (signals en un servicio) e iconos (`@lucide/angular` por componente).
-- [ ] 2.6 Completar fixtures con patrones por necesidad (huecos de la matriz de cobertura de docs/plan.md). Cada caso entra con su `expected.json` (`patterns`) y su README:
-  - [ ] ng21-ao: **fachada de modales** `ConfirmService` sobre `NzModalService` (paso de datos y cierre con resultado), usada en ≥ 2 sitios, y 1 uso directo de `NzModalService` como excepción.
-  - [ ] ng17-wrappers: **interceptor de errores** (`HttpInterceptorFn` + `withInterceptors`) que muestra el error con una fachada `NotificacionesService` sobre `NzMessageService`, y un `HttpContextToken` para suprimirlo en una llamada concreta.
-  - [ ] ng17-wrappers: **iconos** de ng-zorro con registro (`provideNzIcons([...])`) y uso `<span nz-icon nzType="…">`.
-  - [ ] ng17-wrappers: **validador propio** (`ValidatorFn`) usado en 2 formularios.
-  - [ ] ng12-modules: **clase base de API** (`ApiService` genérico que los servicios extienden) y **wrapper de respuesta** `{ data, meta }` que se desempaqueta con `map(r => r.data)`; un servicio que no extiende la base como excepción.
-  - [ ] ng17-wrappers: **estado** con `@ngrx/signals` (`signalStore`) en un feature.
-  - [ ] ng21-ao: **paginación en servidor** en el listado (página y tamaño en la URL de la API) frente a la paginación en cliente de `/ejemplos`.
+- [x] 2.6 Completar fixtures con patrones por necesidad (huecos de la matriz de cobertura de docs/plan.md). Cada caso entra con su `expected.json` (`patterns`) y su README:
+  - [x] ng21-ao: **fachada de modales** `ConfirmService` sobre `NzModalService` (paso de datos y cierre con resultado), usada en ≥ 2 sitios, y 1 uso directo de `NzModalService` como excepción.
+  - [x] ng17-wrappers: **interceptor de errores** (`HttpInterceptorFn` + `withInterceptors`) que muestra el error con una fachada `NotificacionesService` sobre `NzMessageService`, y un `HttpContextToken` para suprimirlo en una llamada concreta.
+  - [x] ng17-wrappers: **iconos** de ng-zorro con registro estático (en ng-zorro 17: `NzIconModule.forRoot([...])`; `provideNzIcons` es de versiones posteriores) y uso `<span nz-icon nzType="…">`.
+  - [x] ng17-wrappers: **validador propio** (`ValidatorFn`) usado en 2 formularios.
+  - [x] ng12-modules: **clase base de API** (`ApiService` genérico que los servicios extienden) y **wrapper de respuesta** `{ data, meta }` que se desempaqueta con `map(r => r.data)`; un servicio que no extiende la base como excepción.
+  - [x] ng17-wrappers: **estado** con `@ngrx/signals` (`signalStore`) en un feature.
+  - [x] ng12-modules: **notificaciones con uso directo** (`MatSnackBar` sin fachada), para que la necesidad tenga un caso directo.
+  - [x] ng21-ao: **paginación en servidor** en el listado (página y tamaño en la URL de la API) frente a la paginación en cliente de `/ejemplos`.
   - CA: cada necesidad de prioridad alta (iconos, modales, notificaciones/errores, formularios, API) tiene al menos un fixture con fachada o forma propia y uno con uso directo de la librería.
+- [x] 2.7 `pnpm fixtures:verify` (`scripts/verify-fixtures.mjs` + `scripts/fixtures.config.json`): copia cada fixture a un directorio temporal fuera del repo, instala sus dependencias y lo compila con su versión de Angular (`ngc`; en ng-multi, antes `ng build` de la librería con ng-packagr).
+  - Modos: `compile` (ng21-ao, ng-multi, ng22-modern), `try` (ng17-wrappers: si falla por la versión de Node se reporta "omitido por versión" sin fallar) y `parser-only` (ng12-modules, excluido por decisión; lo dice en la salida).
+  - Determinismo: dependencias directas de cada fixture con versión exacta y sin lockfile (ver docs/plan.md).
+  - Workflow aparte `.github/workflows/verify-fixtures.yml`: `workflow_dispatch` y semanal (lunes 06:00 UTC); no corre en los PR.
+  - Un test exige que `fixtures.config.json` cubra todas las carpetas de `fixtures/` y que sus versiones sean exactas.
+  - CA: con Node 24, ng-multi, ng17-wrappers, ng21-ao y ng22-modern compilan; ng12-modules sale como excluido; código de salida 0.
   - CA (todo M2): los fixtures no necesitan `npm install` para escanearse (solo se leen los archivos); cada uno tiene `README.md` (patrones que representa) y `expected.json` (lo que debe detectar el escáner).
 
 ## M3 — core

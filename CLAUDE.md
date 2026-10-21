@@ -53,6 +53,7 @@ pnpm build                       # todos los paquetes
 pnpm test                        # vitest
 pnpm test -u                     # actualizar snapshots (solo si el cambio es intencional)
 pnpm ao scan fixtures/ng17-wrappers   # correr la CLI local
+pnpm fixtures:verify [fixture…]  # compila cada fixture con su Angular, fuera del repo (lento; también corre semanal en CI)
 ```
 
 ## Convenciones de código
@@ -60,6 +61,7 @@ pnpm ao scan fixtures/ng17-wrappers   # correr la CLI local
 - Ningún detector lanza excepción por un archivo malo: lo registra en `index.warnings[]` y sigue.
 - Los nombres de campos del índice van en inglés; los textos generados para el usuario, en español.
 - Cambios pequeños, un commit recomendado por tarea de TASKS.md.
+- Dependencias de fixtures con versión exacta; actualizarlas es un cambio explícito con su propio commit.
 
 ## Cuándo preguntar (autonomía)
 Trabaja de forma autónoma dentro del repo: crea, edita, mueve y borra archivos, instala dependencias, corre build/test sin pedir confirmación. **Nunca hagas `git add`, `git commit` ni `git push`**: los commits los hace Fran (ver "Commits").

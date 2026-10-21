@@ -1,0 +1,20 @@
+name: Verify fixtures
+
+# Compila cada fixture con su propia versión de Angular (equivale a pnpm fixtures:verify).
+# Es lento e instala dependencias de npm, así que no corre en cada PR.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      # El script no usa dependencias del monorepo: basta con Node.
+      - run: node scripts/verify-fixtures.mjs
