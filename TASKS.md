@@ -4,12 +4,14 @@ Formato: `[ ]` pendiente · `[x]` hecha. Cada tarea tiene un criterio de aceptac
 
 ## M0 — Validación manual (sin código, en el proyecto A y el proyecto B)
 Proyecto A: Angular 17 standalone con wrappers de ng-zorro. Proyecto B: Angular 21 con skill angular-ao.
-- [ ] 0.1 Escribir a mano `.ao/conventions.md`, `.ao/catalog.md` y 3 fichas en el proyecto A (sus wrappers de select, input y botón, equivalentes a mimi-select, mimi-input y mimi-button).
-- [ ] 0.2 Lo mismo en el proyecto B (page-header, custom-table, filter-drawer) + `recipes/listado.md` apuntando a su feature CRUD de referencia (como `pages/proveedores` en ng21-ao).
-- [ ] 0.2b Escribir a mano `.ao/patterns/modales.md` y `.ao/patterns/api.md` en los dos proyectos (forma del proyecto, 1–2 ejemplos reales, "no hacer" y excepciones; ver "Patrones por necesidad" en docs/plan.md).
+Resultado de 0.1, 0.2 y 0.2b: `docs/m0-hallazgos.md`.
+- [x] 0.1 Escribir a mano `.ao/conventions.md`, `.ao/catalog.md` y 3 fichas en el proyecto A (sus wrappers de select, input y botón, equivalentes a mimi-select, mimi-input y mimi-button).
+- [x] 0.2 Lo mismo en el proyecto B (page-header, custom-table, filter-drawer) + `recipes/listado.md` apuntando a su feature CRUD de referencia (como `pages/proveedores` en ng21-ao).
+- [x] 0.2b Escribir a mano `.ao/patterns/modales.md` y `.ao/patterns/api.md` en los dos proyectos (forma del proyecto, 1–2 ejemplos reales, "no hacer" y excepciones; ver "Patrones por necesidad" en docs/plan.md).
 - [ ] 0.3 Correr 3 tareas reales en cada proyecto, primero sin y luego con esos archivos. Anotar: componentes reutilizados vs creados, archivos leídos y correcciones necesarias. Al menos una tarea toca un modal o una llamada a la API, para medir los patterns.
+  - **Se hace después de publicar la 0.1 (M9)**: prueba con/sin `.ao/` en casos de uso reales, ya con el `.ao/` generado por `ao scan` + `/ao:init`.
   - CA: hay una mejora clara; si no la hay, se ajusta el formato de las fichas y de los patterns antes de seguir.
-- [ ] 0.4 Congelar las plantillas finales en `agent/templates/` (salen de 0.1, 0.2 y 0.2b), incluida la de `patterns/<necesidad>.md`.
+- [x] 0.4 Congelar las plantillas finales en `agent/templates/` (salen de 0.1, 0.2 y 0.2b, sección 3 de `docs/m0-hallazgos.md`): `conventions.md`, `catalog.md`, `card.md` (con "Contrato observado" para `kind: wrapper`), `pattern.md`, `recipe.md` y `recommendations.md`, con ejemplos `mimi-*` o neutros.
 
 ## M1 — Repo base
 - [x] 1.1 Monorepo pnpm: `pnpm-workspace.yaml`, `tsconfig.base.json`, tsup, vitest, eslint/prettier, changesets.
@@ -46,6 +48,7 @@ Proyecto A: Angular 17 standalone con wrappers de ng-zorro. Proyecto B: Angular 
   - `stack` incluye `angularVersion`, `builder`, `uiLibraries[]` (nombre + prefijos, p. ej. `{ name: "ng-zorro-antd", prefixes: ["nz-"] }`) y `projectStructure` (`standalone` | `ngmodule` | `mixed`).
   - cada componente lleva `kind` (`wrapper` | `slot-container` | `component`); los `wrapper` llevan además `wraps`.
   - `patterns: { <necesidad>: { approach, facade?, evidence[], exceptions[] } }`, con `necesidad` ∈ iconos, modales, notificaciones, formularios, api, estado, auth, tablas, estilos, entornos. `approach` es la forma dominante (p. ej. `"facade"`, `"direct"`, `"base-class"`); `facade` nombra el servicio o componente propio; `evidence[]` y `exceptions[]` citan archivos con conteos.
+  - De M0 (`docs/m0-hallazgos.md` §4): `kind` incluye `unused`; evidencia común `{ file, line, snippet? }`; `usages` con distribución por archivo; `contract[]` en los wrappers (`{ piece, required, present, total }`); `docDrift[]`, `inertAttributes[]`, `possibleIssues[]` y `emergentPatterns[]`.
 - [ ] 3.2 Esquema del frontmatter de la ficha (selector, source, kind, wraps, hash, usedIn).
 - [ ] 3.3 Utilidades: rutas POSIX relativas, hash de contenido, orden estable y escritura atómica.
 - [ ] 3.4 Esquema zod de `.ao/config.json` (opcional, lo escribe el equipo del repo). Si no existe, el escáner usa los valores por defecto. Campos propuestos:
@@ -84,6 +87,7 @@ Nota: los conteos de los `expected.json` de M2 salieron de grep. Si un detector 
     - tienen una estructura de template equivalente (mismo árbol de elementos y slots `ng-content`, ignorando clases, bindings y valores de `select`).
   - El warning dice qué criterio se cumplió (inputs compartidos y/o template equivalente) y sugiere usar el de mayor alcance (la librería).
   - CA: en ng-multi, `app-button` ↔ `ui-button` (por inputs) y `bo-card` ↔ `ui-card` (por template) salen como duplicados; `bo-button-group` no (nombre base `button-group` ≠ `button`).
+  - Después (de M0): ampliar a servicios y funciones utilitarias (dos `formTouched`, dos utilidades de modal), con criterio propio de equivalencia.
 - [ ] 4.13 `facades`: detector de fachadas de servicios. Una **fachada** es un servicio propio que inyecta un servicio de librería (`NzModalService`, `MatDialog`, `HttpClient`, `NzMessageService`, `MatSnackBar`…), por constructor o con `inject()`, y que el resto del código usa más que el servicio de librería directo.
   - Cuenta, fuera de la propia fachada, los archivos que inyectan la fachada frente a los que inyectan el servicio de librería; es fachada si gana. Mismo criterio de evidencia que los wrappers: archivos y conteos, y los usos directos van a `exceptions[]`.
   - Un servicio con métodos HTTP que solo envuelve `HttpClient` para un recurso (p. ej. `ProveedoresService`) no es fachada de `HttpClient`: es un servicio de datos. Solo cuenta como fachada de API una clase base o un servicio genérico que los demás usan para llamar a la API.
@@ -96,6 +100,18 @@ Nota: los conteos de los `expected.json` de M2 salieron de grep. Si un detector 
   5. **api**: `HttpClient` directo, clase base o `httpResource`; origen de la URL (`environment`, constante, token); wrapper de respuesta y cómo se desempaqueta; interceptores; `HttpContext`; ubicación de los modelos.
   6. Después: **estado**, **auth/guards**, **tablas-filtros-paginación**, **estilos** (dónde se sobrescribe la librería) y **entornos**.
   - CA: cada necesidad se valida contra los fixtures que la cubren según la matriz de cobertura de docs/plan.md; una necesidad sin evidencia en el repo no aparece en `patterns` (no se inventa).
+- [ ] 4.15 `unused`: código heredado sin uso. Componentes, directivas y pipes que nadie usa en templates (ni importa en `imports`/`declarations` de otro sitio), servicios que nadie inyecta e interceptores importados pero no registrados en `withInterceptors`/`HTTP_INTERCEPTORS`.
+  - Los componentes sin uso llevan `kind: "unused"` (con el `kind` que tendrían en `formerKind`); nunca se usan como ejemplo en fichas ni recetas y van a la sección "Heredado sin uso" de conventions.md y a "Legacy" de catalog.md.
+  - Los usos del showcase no cuentan: un componente que solo aparece en el showcase es `unused`.
+  - CA: en ng-multi, `ui-badge` sale `unused`; ningún componente usado en algún template sale `unused`.
+- [ ] 4.16 `inertAttributes`: atributos de template con forma de directiva que no hacen nada. Dos casos: (1) coinciden con el selector de una directiva del repo que el componente no importa (standalone) o que su módulo no ve (NgModules, con 4.10); (2) tienen forma de directiva (`appX`, `xDirective`, prefijo propio de la config) y no coinciden con ningún selector conocido (repo, librerías de UI instaladas, Angular).
+  - Cada caso va con su evidencia y el número de veces que se repite; la ficha del wrapper lo marca "se escribe siempre, no tiene efecto" y recommendations.md lo lista.
+  - CA: un fixture con un atributo inerte de cada tipo da exactamente esos dos; ningún atributo HTML estándar, `aria-*`, `data-*` ni input de un componente sale como inerte.
+- [ ] 4.17 `contract`: contrato observado de cada wrapper. Para cada pieza que aparece en los usos (atributo o directiva en el elemento proyectado, binding, hermano como un `label`), cuenta en cuántos usos está (`present` / `total`) y la marca `required` si está en todos.
+  - Los usos del showcase y de `deprecated` no cuentan.
+  - CA: en ng17-wrappers, el contrato de `mimi-select` da `mimi-select`, `inputEffectDirective`, `mimiType` y `formControlName` como `required` (3/3) y `nzShowSearch` como opcional (2/3).
+- [ ] 4.18 `emergentPatterns`: patrones de dominio fuera de las 10 necesidades fijas. Una función o servicio propio usado en ≥ N features distintas (N por defecto 3, configurable) que no es componente ni ya cuenta como fachada de una necesidad. El escáner da el símbolo, el conteo y la distribución por feature; la IA en `/ao:init` le pone nombre y decide si merece `patterns/<nombre>.md`.
+  - CA: en un fixture con una función de permisos usada en 3 features, sale como emergente con sus 3 features; una utilidad usada en 1 sola feature no sale.
 
 ## M5 — CLI
 - [ ] 5.1 `ao scan [path]`: escribe `.ao/index.json`, imprime un resumen y es incremental por hash.
@@ -115,6 +131,10 @@ Nota: los conteos de los `expected.json` de M2 salieron de grep. Si un detector 
 - [ ] 6.4 Preguntas puntuales en `/ao:init`: cuando una convención está dividida (la minoría es ≥ 30 %, p. ej. 60 % `@Input` / 40 % `input()`), el agente pregunta cuál seguir en código nuevo, mostrando los conteos y archivos de ejemplo de cada lado, en vez de elegir solo. La respuesta queda en conventions.md como decisión del equipo.
   - Si nadie responde (ejecución sin usuario presente), la convención queda en conventions.md como "pendiente de confirmar", con ambas opciones y su evidencia; nunca se inventa la respuesta.
   - CA: con una convención 70/30 hay pregunta; con 90/10 no la hay y gana la mayoría; sin usuario presente, la 70/30 queda "pendiente de confirmar" con las dos opciones, sus conteos y archivos.
+- [ ] 6.5 Drift de docs: `/ao:init` y `/ao:sync` leen la documentación propia del repo (CLAUDE.md, AGENTS.md, skills en `.claude/skills/`, `.agent/`, `.gemini/`…) y contrastan cada afirmación verificable con el índice (rutas, nombres de exports, firmas de clases base, registro de íconos, rutas de la app, convenciones). El código manda (principio 9).
+  - Las contradicciones van a `docDrift[]` / la sección "Contradicciones" de conventions.md, cada una con lo que dice el documento (archivo:línea), lo que muestra el código (evidencia) y qué documento corregir. Nunca se corrige el documento del equipo sin pedirlo.
+  - El escáner solo aporta lo determinista (rutas y símbolos citados en los docs que no existen en el repo); el contraste semántico lo hace el agente.
+  - CA: en un fixture con un CLAUDE.md que cita una ruta inexistente y un nombre de export viejo, salen las 2 contradicciones con su evidencia; las afirmaciones que coinciden con el código no salen.
 
 ## M7 — Adaptador Claude Code + install
 - [ ] 7.1 Generar un plugin `ao` (`.claude-plugin/plugin.json`, `commands/init.md`) → `/ao:init`.

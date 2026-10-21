@@ -17,6 +17,7 @@ Plan completo: `docs/plan.md`. Backlog: `TASKS.md` (trabaja una tarea a la vez y
 6. **Licencia propietaria.** Nunca pongas MIT ni otra licencia open source en ningún package.json, README o LICENSE; usa `"license": "UNLICENSED"` y `"private": true` hasta que se defina el licenciamiento.
 7. **Los detectores detectan patrones, no versiones.** La versión solo se usa para interpretar los valores por defecto (por ejemplo, OnPush en v22 o standalone implícito desde v19); nunca para suponer que un patrón está o no está.
 8. **Ningún detector usa nombres de proyectos concretos.** Nada de selectores, prefijos, rutas ni carpetas de proyectos reales o de los fixtures (`mimi-*`, `pages/proveedores`…) en el código del escáner. Solo se usan datos genéricos (tabla de prefijos de librerías de UI: `nz-`, `mat-`, `p-`, `ion-`); lo propio de cada repo entra por `.ao/config.json`.
+9. **El código manda; la documentación existente del repo (CLAUDE.md, AGENTS.md, skills) es evidencia a contrastar, no verdad.** Lo que dicen esos documentos se compara con el índice y las contradicciones se reportan (`docDrift`); nunca se copian a conventions.md ni a las fichas sin verificarlas en el código.
 
 ## Stack
 - Node ≥ 22 (CI en 22 y 24), TypeScript estricto, ESM.
@@ -35,7 +36,7 @@ packages/
   cli/               bin "ao": install, scan, check
 agent/
   commands/          init.md, sync.md (fuente única de los prompts)
-  templates/         plantillas de AGENTS.md, conventions.md, catalog.md, card.md, recipes/*
+  templates/         plantillas de .ao/: conventions, catalog, card, pattern, recipe, recommendations (AGENTS.md llega con 6.1)
   profiles/angular-modern/  perfil recomendado (angular-ao refactorizado); cada regla con su versión mínima
 fixtures/            sintéticos; cada uno con README.md y expected.json (oráculo de lo que debe detectar el escáner)
   ng12-modules/      NgModules, Angular Material, loadChildren con módulo, SCSS
