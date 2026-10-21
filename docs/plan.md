@@ -23,6 +23,7 @@ Estado: planeación, sin desarrollo. Basado en revisar angular-ao (skill), el pr
      - `component` en el resto de casos.
      - Las librerías se reconocen con una tabla de prefijos (`nz-`, `mat-`, `p-`, `ion-`) más los prefijos propios que el equipo declare en `.ao/config.json`.
    - En proyectos con NgModules: qué componentes ve cada template según `declarations`/`exports`/`imports`.
+   - **Patrones por necesidad** (`patterns`): cómo resuelve el proyecto iconos, modales, notificaciones/errores, formularios, API, estado, auth, tablas, estilos y entornos, incluidas sus **fachadas** de servicios (ver más abajo).
    - Usos reales: cuántas veces se usa cada componente y los 2–3 sitios de uso más representativos (los del showcase no cuentan como uso real).
    - Estadísticas de convenciones: % de standalone, inject vs constructor, signals vs @Input, @if vs *ngIf y naming de archivos.
    - Es incremental (hash por archivo), barato, reproducible y no se inventa nada.
@@ -41,6 +42,7 @@ CLAUDE.md                      ← @AGENTS.md + lo específico de Claude
   conventions.md               ← "así se trabaja aquí" + evidencia (%, rutas)
   catalog.md                   ← intención → componente ("select con búsqueda" → mimi-select + …)
   components/<nombre>.md       ← una ficha por componente compartido (reemplaza el showcase)
+  patterns/<necesidad>.md      ← "cómo se hace X aquí": forma del proyecto, 1–2 ejemplos reales, no hacer, excepciones
   recipes/listado.md, crear-editar.md, detalle.md, modal.md
   recommendations.md           ← mejoras sugeridas, priorizadas, que NO se aplican solas
 .claude/skills/ao-project/SKILL.md (+ espejo para los otros agentes)
@@ -64,6 +66,49 @@ Nunca uses nz-select suelto. Siempre envuélvelo:
 ## Visto en: pages/solicitudes, pages/pagos (+N)
 ## No hacer: estilos de .ant-select en el componente de la página
 ```
+
+### Patrones por necesidad
+
+Los componentes no son lo único que el agente reinventa: también abre modales, muestra errores o llama a la API "a su manera". Para cada **necesidad** el escáner reporta la forma dominante del proyecto (`approach`), la fachada si existe, la evidencia y las excepciones; `/ao:init` lo convierte en `.ao/patterns/<necesidad>.md`.
+
+**Fachada.** Servicio propio que inyecta un servicio de librería (`NzModalService`, `MatDialog`, `HttpClient`, `NzMessageService`, `MatSnackBar`…) y que el resto del código usa más que el servicio de librería directo. Es "la forma oficial" del proyecto para esa necesidad. Se aplica el mismo criterio de evidencia que a los wrappers: archivos y conteos (`ConfirmService en 6 archivos; NzModalService directo en 1: pages/x`), y los usos directos se listan como excepciones. Un servicio de datos que solo envuelve `HttpClient` para un recurso no es fachada; sí lo es una clase base o un servicio genérico de API.
+
+Necesidades, en orden de prioridad:
+
+1. **Iconos**: librería, registro (`provideNzIcons`, `MatIconRegistry`) y sintaxis de uso.
+2. **Modales**: fachada o directo, paso de datos y cierre con resultado.
+3. **Notificaciones/errores**: servicio de mensajes, interceptor de errores y cómo suprimirlo en una llamada.
+4. **Formularios**: reactive tipados o no, Signal Forms, template-driven, `FormBuilder` frente a `new`, validadores propios, layout de campos y carga de catálogos.
+5. **API**: `HttpClient` directo, clase base o `httpResource`; origen de la URL; wrapper de respuesta y cómo se desempaqueta; interceptores; `HttpContext`; ubicación de los modelos.
+6. Después: estado, auth/guards, tablas-filtros-paginación, estilos (dónde se sobrescribe la librería) y entornos.
+
+Ejemplo de `.ao/patterns/modales.md` (con la fachada que agrega 2.6 en ng21-ao):
+
+```md
+## Modales en este proyecto
+Usa ConfirmService (src/app/shared/services/confirm.service.ts), no NzModalService directo.
+Visto en: pages/proveedores/detalle, pages/proveedores/listado
+const ok = await this.confirm.ask({ titulo: '¿Eliminar?', mensaje: … });
+## No hacer: inyectar NzModalService en una página
+## Excepciones: pages/ejemplos (1 uso directo)
+```
+
+#### Matriz de cobertura de fixtures
+
+✔ forma propia o fachada · ● uso directo de la librería · — sin cobertura · **2.5/2.6** se agrega en esa tarea.
+
+| Necesidad | ng12-modules | ng17-wrappers | ng21-ao | ng-multi | ng22-modern |
+|---|---|---|---|---|---|
+| Iconos | ● `mat-icon` con ligaduras | — → **2.6** `provideNzIcons` | ● lucide-angular `[img]` | — | **2.5** |
+| Modales | ● `MatDialog` + `MAT_DIALOG_DATA` + `afterClosed` | — | ● `nz-popconfirm`; ✔ `ConfirmService` → **2.6** | ● `prompt()` (antipatrón) | — |
+| Notificaciones/errores | interceptor de auth (sin errores) | — → **2.6** interceptor de errores + `NotificacionesService` + `HttpContextToken` | — | — | — |
+| Formularios | ● reactive sin tipar, `FormBuilder` + `new FormControl`; ✔ layout `app-field` | ● reactive tipados (`nonNullable`), `ngModel` en reportes, catálogos por servicio; ✔ layout `mimi-*`; validador propio → **2.6** | ● reactive tipados, layout `nz-form-item` | — | **2.5** Signal Forms |
+| API | ● `HttpClient` + `environment`; ✔ clase base + wrapper `{ data }` → **2.6** | ● `HttpClient` + `environment.apiUrl`, modelos en el servicio | ● `HttpClient`, URL constante, modelos en `data-access/` | ● `HttpClient`, URL constante | **2.5** `httpResource` |
+| Estado | — | — → **2.6** `signalStore` | signals locales + `rxResource` | — | — |
+| Auth/guards | guard de clase + interceptor de auth | guard funcional con `inject()` | — | — | — |
+| Tablas | ● `mat-table` + filtro en cliente | — | ✔ `custom-table` (paginación en cliente); servidor → **2.6** | — | — |
+| Estilos | `::ng-deep .mat-*` en `app-field`/`app-card` + tema SCSS | `::ng-deep .ant-*` solo en los wrappers | `theme.less` + Tailwind `@theme` | CSS por componente | — |
+| Entornos | `environment` + `fileReplacements` | `environment.ts` sin reemplazos | — (URLs constantes) | — | — |
 
 ### Regla de capas (lo que resuelve el proyecto A frente al proyecto B)
 
@@ -116,9 +161,9 @@ Fixtures de nivel 1: `ng12-modules` (NgModules + Material), `ng17-wrappers` (sta
 
 ## 4. Plan de acción
 
-0. **Validar a mano (1–2 días):** escribir a mano conventions.md, catalog.md y 3 fichas para el proyecto A y para el proyecto B. Probar en Claude Code con 3 tareas reales antes y después, midiendo cuántos componentes reutiliza frente a cuántos crea, cuántos archivos lee y cuántas correcciones necesitas hacerle. Si no mejora, ajustar el formato antes de programar nada.
+0. **Validar a mano (1–2 días):** escribir a mano conventions.md, catalog.md, 3 fichas y `patterns/modales.md` + `patterns/api.md` para el proyecto A y para el proyecto B. Probar en Claude Code con 3 tareas reales antes y después, midiendo cuántos componentes reutiliza frente a cuántos crea, cuántos archivos lee y cuántas correcciones necesitas hacerle. Si no mejora, ajustar el formato antes de programar nada.
 1. **Congelar los formatos:** esquema de index.json (con `kind` por componente), `.ao/config.json`, plantilla de ficha, conventions.md y recipes.
-2. **Escáner Angular:** ts-morph + `@angular/compiler` (parseTemplate) para templates; clasificación wrapper / slot-container / component, NgModules, conteo de usos y estadísticas de convenciones. Se valida contra los fixtures de nivel 1 (cada uno con su `expected.json`) y contra el corpus de repos públicos (`pnpm corpus`, en `.corpus/`, sin commitear nada).
+2. **Escáner Angular:** ts-morph + `@angular/compiler` (parseTemplate) para templates; clasificación wrapper / slot-container / component, NgModules, conteo de usos, estadísticas de convenciones, fachadas y patrones por necesidad. Se valida contra los fixtures de nivel 1 (cada uno con su `expected.json`) y contra el corpus de repos públicos (`pnpm corpus`, en `.corpus/`, sin commitear nada).
 3. **/ao:init + adaptador de Claude Code** (plugin). Reorganizar angular-ao como `profiles/angular-modern`, con versión mínima por regla, corrigiendo la contradicción lucide/ng-icons y uniendo shared-components y styling.
 4. **Adaptadores para Codex, agy y Gemini + /ao:sync + check de CI.**
 5. **/ao:view + Figma MCP**, y opcionalmente un MCP propio del catálogo.
