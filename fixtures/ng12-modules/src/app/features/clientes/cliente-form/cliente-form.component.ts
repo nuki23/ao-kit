@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ClientesService, TipoCliente } from '@core/services/clientes.service';
 
@@ -18,6 +19,7 @@ export class ClienteFormComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private clientesService: ClientesService,
+    private snackBar: MatSnackBar,
   ) {
     this.form = this.fb.group({
       nombre: ['', Validators.required],
@@ -56,7 +58,10 @@ export class ClienteFormComponent implements OnInit {
       return;
     }
     const cliente = { ...this.form.value, id: this.id ?? undefined };
-    this.clientesService.guardar(cliente).subscribe((c) => this.router.navigate(['/clientes', c.id]));
+    this.clientesService.guardar(cliente).subscribe((c) => {
+      this.snackBar.open('Cliente guardado', 'OK', { duration: 3000 });
+      this.router.navigate(['/clientes', c.id]);
+    });
   }
 
   cancelar(): void {

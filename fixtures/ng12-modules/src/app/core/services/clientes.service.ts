@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '@env/environment';
+import { ApiService } from '@core/api/api.service';
 import { Observable } from 'rxjs';
 
 export interface Cliente {
@@ -18,30 +18,32 @@ export interface TipoCliente {
 }
 
 @Injectable({ providedIn: 'root' })
-export class ClientesService {
-  private readonly baseUrl = `${environment.apiUrl}/clientes`;
+export class ClientesService extends ApiService {
+  protected readonly recurso = 'clientes';
 
-  constructor(private http: HttpClient) {}
+  constructor(http: HttpClient) {
+    super(http);
+  }
 
   listar(): Observable<Cliente[]> {
-    return this.http.get<Cliente[]>(this.baseUrl);
+    return this.obtenerData<Cliente[]>();
   }
 
   obtener(id: number): Observable<Cliente> {
-    return this.http.get<Cliente>(`${this.baseUrl}/${id}`);
+    return this.obtenerData<Cliente>(`/${id}`);
   }
 
   tipos(): Observable<TipoCliente[]> {
-    return this.http.get<TipoCliente[]>(`${this.baseUrl}/tipos`);
+    return this.obtenerData<TipoCliente[]>('/tipos');
   }
 
   guardar(cliente: Partial<Cliente>): Observable<Cliente> {
     return cliente.id
-      ? this.http.put<Cliente>(`${this.baseUrl}/${cliente.id}`, cliente)
-      : this.http.post<Cliente>(this.baseUrl, cliente);
+      ? this.enviarData<Cliente>('put', `/${cliente.id}`, cliente)
+      : this.enviarData<Cliente>('post', '', cliente);
   }
 
   eliminar(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+    return this.borrar(`/${id}`);
   }
 }

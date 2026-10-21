@@ -2,14 +2,17 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { CatalogosService, Opcion } from '@core/services/catalogos.service';
 import { PerfilService } from '@core/services/perfil.service';
+import { NotificacionesService } from '@core/services/notificaciones.service';
 import { MimiInputComponent } from '@shared/components/ui/mimi-input/mimi-input.component';
 import { MimiSelectComponent } from '@shared/components/ui/mimi-select/mimi-select.component';
 import { InputEffectDirective } from '@shared/directives/input-effect.directive';
 import { MimiTypeDirective } from '@shared/directives/mimi-type.directive';
+import { noSoloEspacios } from '@shared/validators/no-solo-espacios.validator';
 
 @Component({
   selector: 'app-perfil',
@@ -18,6 +21,7 @@ import { MimiTypeDirective } from '@shared/directives/mimi-type.directive';
     CommonModule,
     ReactiveFormsModule,
     NzButtonModule,
+    NzIconModule,
     NzInputModule,
     NzSelectModule,
     MimiSelectComponent,
@@ -33,7 +37,7 @@ export class PerfilComponent implements OnInit {
   guardado = false;
 
   form = this.fb.nonNullable.group({
-    nombre: ['', Validators.required],
+    nombre: ['', [Validators.required, noSoloEspacios()]],
     correo: ['', [Validators.required, Validators.email]],
     ciudad: ['', Validators.required],
   });
@@ -42,6 +46,7 @@ export class PerfilComponent implements OnInit {
     private fb: FormBuilder,
     private perfilService: PerfilService,
     private catalogosService: CatalogosService,
+    private notificaciones: NotificacionesService,
   ) {}
 
   ngOnInit(): void {
@@ -54,6 +59,9 @@ export class PerfilComponent implements OnInit {
       this.form.markAllAsTouched();
       return;
     }
-    this.perfilService.actualizar(this.form.getRawValue()).subscribe(() => (this.guardado = true));
+    this.perfilService.actualizar(this.form.getRawValue()).subscribe(() => {
+      this.guardado = true;
+      this.notificaciones.exito('Perfil actualizado.');
+    });
   }
 }

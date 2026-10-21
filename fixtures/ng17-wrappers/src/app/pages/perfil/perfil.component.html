@@ -1,5 +1,5 @@
 <section class="page">
-  <h1 class="page__title">Mi perfil</h1>
+  <h1 class="page__title"><span nz-icon nzType="user" nzTheme="outline"></span> Mi perfil</h1>
 
   <form class="page__form" [formGroup]="form" (ngSubmit)="guardar()">
     <mimi-input>
@@ -52,7 +52,10 @@
       </nz-select>
     </mimi-select>
 
-    <button nz-button nzType="primary" type="submit">Guardar</button>
+    <button nz-button nzType="primary" type="submit">
+      <span nz-icon nzType="check-circle" nzTheme="outline"></span>
+      Guardar
+    </button>
     <p *ngIf="guardado" class="page__ok">Perfil actualizado.</p>
   </form>
 </section>

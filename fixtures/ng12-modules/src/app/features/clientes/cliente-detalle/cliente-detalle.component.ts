@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Cliente, ClientesService } from '@core/services/clientes.service';
 import {
@@ -20,6 +21,7 @@ export class ClienteDetalleComponent implements OnInit {
     private router: Router,
     private clientesService: ClientesService,
     private dialog: MatDialog,
+    private snackBar: MatSnackBar,
   ) {}
 
   ngOnInit(): void {
@@ -41,7 +43,10 @@ export class ClienteDetalleComponent implements OnInit {
       .afterClosed()
       .subscribe((ok) => {
         if (ok) {
-          this.clientesService.eliminar(cliente.id).subscribe(() => this.router.navigate(['/clientes']));
+          this.clientesService.eliminar(cliente.id).subscribe(() => {
+            this.snackBar.open('Cliente eliminado', 'OK', { duration: 3000 });
+            this.router.navigate(['/clientes']);
+          });
         }
       });
   }

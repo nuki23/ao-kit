@@ -1,5 +1,5 @@
 <section class="page">
-  <h1 class="page__title">Reportes</h1>
+  <h1 class="page__title"><span nz-icon nzType="bar-chart" nzTheme="outline"></span> Reportes</h1>
 
   <nz-select
     class="reportes__periodo"
@@ -10,7 +10,9 @@
     <nz-option *ngFor="let p of periodos" [nzValue]="p.id" [nzLabel]="p.nombre"></nz-option>
   </nz-select>
 
-  <table class="reportes__tabla">
+  <p *ngIf="error" class="reportes__error">No se pudo cargar el reporte de este periodo.</p>
+
+  <table *ngIf="!error" class="reportes__tabla">
     <tr *ngFor="let fila of filas">
       <td>{{ fila.concepto }}</td>
       <td>{{ fila.total | number }}</td>

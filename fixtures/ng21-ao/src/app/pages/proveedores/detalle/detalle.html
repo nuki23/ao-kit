@@ -1,15 +1,8 @@
 @if (proveedor.value(); as p) {
   <app-page-header [title]="p.nombre" [subtitle]="p.documento" backLink="/proveedores">
+    <button nz-button type="button" (click)="contactar(p)">Contactar</button>
     <a nz-button [routerLink]="['/proveedores', p.id, 'editar']">Editar</a>
-    <button
-      nz-button
-      nzDanger
-      nz-popconfirm
-      nzPopconfirmTitle="¿Eliminar este proveedor?"
-      (nzOnConfirm)="eliminar()"
-    >
-      Eliminar
-    </button>
+    <button nz-button nzDanger type="button" (click)="eliminar(p)">Eliminar</button>
   </app-page-header>
 
   <nz-descriptions nzBordered [nzColumn]="1" class="rounded-card bg-white">

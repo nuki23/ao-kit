@@ -1,5 +1,6 @@
 <section class="page">
-  <h1 class="page__title">Solicitudes</h1>
+  <h1 class="page__title"><span nz-icon nzType="file-text" nzTheme="outline"></span> Solicitudes</h1>
+  <p class="page__resumen">{{ store.pendientes() }} pendientes</p>
 
   <form class="page__form" [formGroup]="form" (ngSubmit)="enviar()">
     <mimi-select>
@@ -35,13 +36,16 @@
       />
     </mimi-input>
 
-    <button nz-button nzType="primary" type="submit" [disabled]="form.invalid">Enviar</button>
+    <button nz-button nzType="primary" type="submit" [disabled]="form.invalid">
+      <span nz-icon nzType="check-circle" nzTheme="outline"></span>
+      Enviar
+    </button>
   </form>
 
-  <p *ngIf="cargando" class="page__loading">Cargando…</p>
+  <p *ngIf="store.cargando()" class="page__loading">Cargando…</p>
 
-  <ul *ngIf="!cargando" class="page__list">
-    <li *ngFor="let solicitud of solicitudes" class="page__item">
+  <ul *ngIf="!store.cargando()" class="page__list">
+    <li *ngFor="let solicitud of store.solicitudes()" class="page__item">
       <span>{{ solicitud.descripcion }}</span>
       <app-status-badge [estado]="solicitud.estado"></app-status-badge>
     </li>

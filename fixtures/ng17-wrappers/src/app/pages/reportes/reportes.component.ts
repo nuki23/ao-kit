@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { Opcion } from '@core/services/catalogos.service';
 import { FilaReporte, ReportesService } from '@core/services/reportes.service';
@@ -8,7 +9,7 @@ import { FilaReporte, ReportesService } from '@core/services/reportes.service';
 @Component({
   selector: 'app-reportes',
   standalone: true,
-  imports: [CommonModule, FormsModule, NzSelectModule],
+  imports: [CommonModule, FormsModule, NzIconModule, NzSelectModule],
   templateUrl: './reportes.component.html',
   styleUrls: ['./reportes.component.scss'],
 })
@@ -20,6 +21,7 @@ export class ReportesComponent implements OnInit {
   ];
   periodo = 'mes';
   filas: FilaReporte[] = [];
+  error = false;
 
   constructor(private reportesService: ReportesService) {}
 
@@ -29,6 +31,10 @@ export class ReportesComponent implements OnInit {
 
   cambiarPeriodo(periodo: string): void {
     this.periodo = periodo;
-    this.reportesService.resumen(periodo).subscribe((filas) => (this.filas = filas));
+    this.error = false;
+    this.reportesService.resumen(periodo).subscribe({
+      next: (filas) => (this.filas = filas),
+      error: () => (this.error = true),
+    });
   }
 }

@@ -3,28 +3,23 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
-import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { EmptyState } from '@shared/components/empty-state/empty-state';
 import { PageHeader } from '@shared/components/page-header/page-header';
+import { ConfirmService } from '@shared/services/confirm.service';
+import { Proveedor } from '../data-access/proveedor.model';
 import { ProveedoresService } from '../data-access/proveedores.service';
+import { ContactoData, ContactoModal } from './contacto-modal';
 
 @Component({
   selector: 'app-proveedores-detalle',
-  imports: [
-    RouterLink,
-    NzButtonModule,
-    NzDescriptionsModule,
-    NzPopconfirmModule,
-    NzTagModule,
-    PageHeader,
-    EmptyState,
-  ],
+  imports: [RouterLink, NzButtonModule, NzDescriptionsModule, NzTagModule, PageHeader, EmptyState],
   templateUrl: './detalle.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Detalle {
   private readonly service = inject(ProveedoresService);
+  private readonly confirm = inject(ConfirmService);
   private readonly router = inject(Router);
 
   readonly id = input.required<string>();
@@ -34,7 +29,26 @@ export class Detalle {
     stream: ({ params }) => this.service.obtener(params.id),
   });
 
-  protected eliminar(): void {
-    this.service.eliminar(Number(this.id())).subscribe(() => void this.router.navigate(['/proveedores']));
+  protected async eliminar(p: Proveedor): Promise<void> {
+    const ok = await this.confirm.confirmar({
+      titulo: 'Eliminar proveedor',
+      mensaje: `¿Seguro que quieres eliminar a ${p.nombre}?`,
+      textoOk: 'Eliminar',
+      peligroso: true,
+    });
+    if (ok) {
+      this.service.eliminar(p.id).subscribe(() => void this.router.navigate(['/proveedores']));
+    }
+  }
+
+  protected async contactar(p: Proveedor): Promise<void> {
+    const mensaje = await this.confirm.abrir<ContactoModal, ContactoData, string>(
+      ContactoModal,
+      'Contactar proveedor',
+      { nombre: p.nombre, correo: p.correo },
+    );
+    if (mensaje) {
+      this.service.contactar(p.id, mensaje).subscribe();
+    }
   }
 }

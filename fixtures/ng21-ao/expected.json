@@ -19,7 +19,7 @@
   "notWrappers": [
     {
       "selector": "app-page-header",
-      "reason": "tiene <ng-content /> y en detalle.html se le proyectan botones nz-button, pero su template tiene contenido propio (título, subtítulo, volver); no es un wrapper"
+      "reason": "tiene <ng-content /> y en detalle.html y listado.html se le proyectan botones nz-button, pero su template tiene contenido propio (título, subtítulo, volver); no es un wrapper"
     },
     {
       "selector": "app-custom-table",
@@ -28,7 +28,7 @@
   ],
   "sharedComponents": [
     { "selector": "app-page-header", "source": "src/app/shared/components/page-header/", "inputs": ["title", "subtitle", "backLink", "actionLabel"], "requiredInputs": ["title"], "outputs": ["action"] },
-    { "selector": "app-custom-table", "source": "src/app/shared/components/custom-table/", "inputs": ["columns", "data", "loading", "pageSize", "emptyText"], "requiredInputs": ["columns", "data"], "outputs": ["rowClick"] },
+    { "selector": "app-custom-table", "source": "src/app/shared/components/custom-table/", "inputs": ["columns", "data", "loading", "pageSize", "emptyText", "serverPaging", "total", "pageIndex"], "requiredInputs": ["columns", "data"], "outputs": ["rowClick", "pageChange"] },
     { "selector": "app-empty-state", "source": "src/app/shared/components/empty-state/", "inputs": ["title", "description", "actionLabel"], "requiredInputs": ["title"], "outputs": ["action"] }
   ],
   "usages": {
@@ -58,7 +58,7 @@
       ]
     },
     "showcaseOnly": {
-      "$comment": "Usos fuera de /ejemplos (los del showcase no cuentan como uso real)",
+      "$comment": "Usos dentro de /ejemplos: se restan de count porque los del showcase no cuentan como uso real",
       "app-page-header": 3,
       "app-custom-table": 1,
       "app-empty-state": 3
@@ -66,19 +66,47 @@
   },
   "conventions": {
     "standalone": {
-      "standalone": 8,
-      "total": 8,
+      "standalone": 9,
+      "total": 9,
       "explicitFlag": 0,
       "percent": 100,
       "$comment": "Ningún componente declara standalone: es el valor por defecto desde v19"
     },
-    "di": { "constructor": 0, "inject": 4, "majority": "inject" },
-    "inputs": { "decorator": 0, "signal": 14, "majority": "signal" },
-    "outputs": { "decorator": 0, "signal": 3 },
+    "di": {
+      "constructor": 0,
+      "inject": 6,
+      "majority": "inject",
+      "$comment": "grep por 'inject(' da 5: contacto-modal.ts usa inject<ContactoData>(NZ_MODAL_DATA), que el AST sí cuenta"
+    },
+    "inputs": { "decorator": 0, "signal": 17, "majority": "signal" },
+    "outputs": { "decorator": 0, "signal": 4 },
     "controlFlow": { "structuralDirectives": 0, "blocks": 20, "majority": "blocks" },
-    "changeDetection": { "onPush": 8, "default": 0 },
+    "changeDetection": { "onPush": 9, "default": 0 },
     "fileNaming": "kebab-case.ts sin sufijo .component (estilo v20+); servicios con .service.ts",
     "featureLayout": "pages/<feature>/{listado,crear-editar,detalle,data-access}"
+  },
+  "patterns": {
+    "modales": {
+      "approach": "facade",
+      "facade": { "name": "ConfirmService", "source": "src/app/shared/services/confirm.service.ts", "wraps": "NzModalService" },
+      "evidence": [
+        { "uses": "ConfirmService", "files": 2, "where": ["src/app/pages/proveedores/crear-editar/crear-editar.ts", "src/app/pages/proveedores/detalle/detalle.ts"] },
+        { "uses": "NzModalService directo (fuera de la fachada)", "files": 1 }
+      ],
+      "dataPassing": "confirmar({ titulo, mensaje }) y abrir(componente, titulo, datos) → nzData; el contenido lo lee con inject(NZ_MODAL_DATA)",
+      "result": "Promise: confirmar → boolean (nzOnOk / nzOnCancel); abrir → R | undefined (NzModalRef.close(result) + afterClose)",
+      "provider": "importProvidersFrom(NzModalModule) en app.config.ts (NzModalService no es providedIn root)",
+      "exceptions": [{ "file": "src/app/pages/proveedores/listado/listado.ts", "detail": "ayuda con NzModalService.info directo" }]
+    },
+    "tablas": {
+      "approach": "shared-component",
+      "component": "app-custom-table",
+      "paging": [
+        { "mode": "server", "file": "src/app/pages/proveedores/listado/listado.html", "detail": "[serverPaging]=true, [total], [pageIndex], (pageChange); página, tamaño y búsqueda viajan en la URL (listarPagina)" },
+        { "mode": "client", "file": "src/app/pages/ejemplos/ejemplos.html", "detail": "sin serverPaging (showcase)" }
+      ],
+      "responseShape": "Pagina<T> { items, total } en data-access/proveedor.model.ts"
+    }
   },
   "routes": [
     { "path": "", "redirectTo": "proveedores" },

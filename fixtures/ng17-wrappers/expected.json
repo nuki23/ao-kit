@@ -79,14 +79,20 @@
   "conventions": {
     "standalone": { "standalone": 10, "total": 10, "explicitFlag": 10, "percent": 100 },
     "di": {
-      "constructor": 10,
-      "inject": 1,
+      "constructor": 11,
+      "inject": 4,
       "majority": "constructor",
-      "injectFiles": ["src/app/core/guards/auth.guard.ts"]
+      "injectFiles": [
+        "src/app/core/guards/auth.guard.ts",
+        "src/app/core/interceptors/errores.interceptor.ts",
+        "src/app/pages/solicitudes/solicitudes.component.ts",
+        "src/app/pages/solicitudes/solicitudes.store.ts"
+      ],
+      "$comment": "inject() solo donde no hay constructor (guard e interceptor funcionales, withMethods) o donde el tipo no se puede usar en el constructor (signalStore)"
     },
     "inputs": { "decorator": 3, "signal": 0, "majority": "decorator" },
     "outputs": { "decorator": 0, "signal": 0 },
-    "controlFlow": { "structuralDirectives": 12, "blocks": 0, "majority": "structuralDirectives" },
+    "controlFlow": { "structuralDirectives": 14, "blocks": 0, "majority": "structuralDirectives" },
     "changeDetection": { "onPush": 0, "default": 8 },
     "fileNaming": "kebab-case.component.ts / .directive.ts / .service.ts",
     "wrapperUsage": {
@@ -94,6 +100,52 @@
       "followed": 3,
       "total": 4,
       "exceptions": ["src/app/pages/reportes/reportes.component.html"]
+    }
+  },
+  "patterns": {
+    "notificaciones": {
+      "approach": "facade",
+      "facade": { "name": "NotificacionesService", "source": "src/app/core/services/notificaciones.service.ts", "wraps": "NzMessageService" },
+      "evidence": [
+        { "uses": "NotificacionesService", "files": 4, "where": ["src/app/core/interceptors/errores.interceptor.ts", "src/app/pages/pagos/pagos.component.ts", "src/app/pages/perfil/perfil.component.ts", "src/app/pages/solicitudes/solicitudes.component.ts"] },
+        { "uses": "NzMessageService directo (fuera de la fachada)", "files": 0 }
+      ],
+      "errorInterceptor": {
+        "source": "src/app/core/interceptors/errores.interceptor.ts",
+        "kind": "HttpInterceptorFn",
+        "registeredWith": "provideHttpClient(withInterceptors([erroresInterceptor]))",
+        "suppress": { "token": "SIN_AVISO_DE_ERROR", "source": "src/app/core/http/contexto.ts", "usedIn": ["src/app/core/services/reportes.service.ts"] }
+      },
+      "exceptions": []
+    },
+    "iconos": {
+      "approach": "static-registry",
+      "library": "ng-zorro-antd (@ant-design/icons-angular)",
+      "registration": "importProvidersFrom(NzIconModule.forRoot(ICONOS)) en app.config.ts",
+      "syntax": "<span nz-icon nzType=\"…\" nzTheme=\"outline\"></span>",
+      "evidence": [{ "icons": 5, "uses": 7, "files": 4 }],
+      "exceptions": []
+    },
+    "formularios": {
+      "approach": "reactive-typed",
+      "builder": "this.fb.nonNullable.group (FormBuilder por constructor)",
+      "customValidators": [{ "name": "noSoloEspacios", "source": "src/app/shared/validators/no-solo-espacios.validator.ts", "kind": "soloEspacios", "uses": 2, "where": ["src/app/pages/perfil/perfil.component.ts", "src/app/pages/solicitudes/solicitudes.component.ts"] }],
+      "fieldLayout": "wrappers mimi-select / mimi-input",
+      "catalogs": "CatalogosService (tipos, bancos, ciudades)",
+      "exceptions": [{ "file": "src/app/pages/reportes/reportes.component.html", "detail": "ngModel (template-driven) en el filtro de periodo" }]
+    },
+    "estado": {
+      "approach": "ngrx-signal-store",
+      "store": { "name": "SolicitudesStore", "source": "src/app/pages/solicitudes/solicitudes.store.ts", "providedIn": "providers del componente SolicitudesComponent" },
+      "evidence": [{ "detail": "signalStore(withState, withComputed, withMethods) con patchState" }],
+      "exceptions": [{ "detail": "pagos, perfil y reportes guardan su estado en propiedades del componente" }]
+    },
+    "api": {
+      "approach": "http-client-direct",
+      "urlOrigin": { "kind": "environment", "field": "environment.apiUrl" },
+      "models": "en el archivo del servicio (core/services/*.service.ts)",
+      "interceptors": ["erroresInterceptor"],
+      "httpContext": ["SIN_AVISO_DE_ERROR"]
     }
   },
   "routes": [

@@ -7,6 +7,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { PageHeader } from '@shared/components/page-header/page-header';
+import { ConfirmService } from '@shared/services/confirm.service';
 import { ProveedoresService } from '../data-access/proveedores.service';
 
 @Component({
@@ -26,6 +27,7 @@ import { ProveedoresService } from '../data-access/proveedores.service';
 export class CrearEditar implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly service = inject(ProveedoresService);
+  private readonly confirm = inject(ConfirmService);
   private readonly router = inject(Router);
 
   /** Viene del parámetro `:id` gracias a withComponentInputBinding. */
@@ -47,6 +49,19 @@ export class CrearEditar implements OnInit {
     const id = this.id();
     if (id) {
       this.service.obtener(Number(id)).subscribe((p) => this.form.patchValue(p));
+    }
+  }
+
+  protected async cancelar(): Promise<void> {
+    const salir =
+      !this.form.dirty ||
+      (await this.confirm.confirmar({
+        titulo: 'Descartar cambios',
+        mensaje: 'Tienes cambios sin guardar. ¿Quieres salir de todas formas?',
+        textoOk: 'Descartar',
+      }));
+    if (salir) {
+      void this.router.navigate(['/proveedores']);
     }
   }
 

@@ -1,0 +1,12 @@
+<p class="mb-3 text-sm text-gray-500">Para: {{ datos.nombre }} &lt;{{ datos.correo }}&gt;</p>
+<textarea
+  nz-input
+  rows="4"
+  placeholder="Escribe tu mensaje"
+  [value]="mensaje()"
+  (input)="mensaje.set($any($event.target).value)"
+></textarea>
+<div class="mt-4 flex justify-end gap-2">
+  <button nz-button type="button" (click)="cancelar()">Cancelar</button>
+  <button nz-button nzType="primary" type="button" [disabled]="!mensaje().trim()" (click)="enviar()">Enviar</button>
+</div>

@@ -1,7 +1,17 @@
 @if (isEmpty()) {
   <app-empty-state title="Sin resultados" [description]="emptyText()" />
 } @else {
-  <nz-table #tabla nzSize="middle" [nzData]="data()" [nzLoading]="loading()" [nzPageSize]="pageSize()">
+  <nz-table
+    #tabla
+    nzSize="middle"
+    [nzData]="data()"
+    [nzLoading]="loading()"
+    [nzPageSize]="pageSize()"
+    [nzFrontPagination]="!serverPaging()"
+    [nzTotal]="serverPaging() ? total() : data().length"
+    [nzPageIndex]="pageIndex()"
+    (nzPageIndexChange)="pageChange.emit($event)"
+  >
     <thead>
       <tr>
         @for (col of columns(); track col.key) {

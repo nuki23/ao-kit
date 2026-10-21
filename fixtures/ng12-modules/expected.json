@@ -94,8 +94,8 @@
       "name": "MaterialModule",
       "source": "src/app/shared/material.module.ts",
       "$comment": "imports y exports vienen de la constante MATERIAL_MODULES (hay que resolver el identificador)",
-      "imports": ["MatButtonModule", "MatCardModule", "MatDialogModule", "MatFormFieldModule", "MatIconModule", "MatInputModule", "MatSelectModule", "MatTableModule"],
-      "exports": ["MatButtonModule", "MatCardModule", "MatDialogModule", "MatFormFieldModule", "MatIconModule", "MatInputModule", "MatSelectModule", "MatTableModule"]
+      "imports": ["MatButtonModule", "MatCardModule", "MatDialogModule", "MatFormFieldModule", "MatIconModule", "MatInputModule", "MatSelectModule", "MatSnackBarModule", "MatTableModule"],
+      "exports": ["MatButtonModule", "MatCardModule", "MatDialogModule", "MatFormFieldModule", "MatIconModule", "MatInputModule", "MatSelectModule", "MatSnackBarModule", "MatTableModule"]
     },
     {
       "name": "SharedModule",
@@ -116,7 +116,7 @@
         "directives": ["[appAutofocus]"],
         "pipes": ["estado"],
         "angularModules": ["CommonModule", "ReactiveFormsModule", "RouterModule"],
-        "uiModules": ["MatButtonModule", "MatCardModule", "MatDialogModule", "MatFormFieldModule", "MatIconModule", "MatInputModule", "MatSelectModule", "MatTableModule"]
+        "uiModules": ["MatButtonModule", "MatCardModule", "MatDialogModule", "MatFormFieldModule", "MatIconModule", "MatInputModule", "MatSelectModule", "MatSnackBarModule", "MatTableModule"]
       },
       "notVisible": ["app-field-error"]
     },
@@ -159,15 +159,41 @@
   ],
   "conventions": {
     "standalone": { "standalone": 0, "total": 11, "percent": 0, "$comment": "9 componentes + 1 directiva + 1 pipe, todos declarados en NgModules" },
-    "di": { "constructor": 10, "inject": 0, "majority": "constructor" },
+    "di": { "constructor": 11, "inject": 0, "majority": "constructor" },
     "inputs": { "decorator": 5, "signal": 0, "majority": "decorator" },
     "outputs": { "decorator": 1, "signal": 0, "emitter": "EventEmitter" },
     "controlFlow": { "structuralDirectives": 8, "blocks": 0, "majority": "structuralDirectives", "$comment": "sin contar los 20 *matHeaderCellDef/*matCellDef/*matRowDef de mat-table" },
     "forms": "reactive sin tipar (FormGroup, FormControl)",
     "guards": "clase (implements CanActivate)",
-    "services": { "providedInRoot": 2, "moduleProviders": 1 },
+    "services": { "providedInRoot": 2, "moduleProviders": 1, "baseClass": "ApiService (abstracta, sin decorador)" },
     "fileNaming": "kebab-case.component.ts / .module.ts / .service.ts / .pipe.ts / .directive.ts",
     "featureLayout": "features/<feature>/{<feature>.module.ts, <feature>-routing.module.ts, componentes}"
+  },
+  "patterns": {
+    "api": {
+      "approach": "base-class",
+      "facade": { "name": "ApiService", "source": "src/app/core/api/api.service.ts", "wraps": "HttpClient", "kind": "abstract-base-class" },
+      "responseWrapper": { "type": "RespuestaApi<T> { data, meta }", "source": "src/app/core/api/respuesta-api.ts", "unwrap": "map((r) => r.data)" },
+      "urlOrigin": { "kind": "environment", "field": "environment.apiUrl", "builtIn": "ApiService.url()" },
+      "evidence": [{ "extends": "ApiService", "files": 1, "where": ["src/app/core/services/clientes.service.ts"] }],
+      "exceptions": [{ "file": "src/app/features/pedidos/pedidos.service.ts", "detail": "usa HttpClient directo y no desempaqueta RespuestaApi" }],
+      "interceptors": ["AuthInterceptor (solo agrega el token; no maneja errores)"]
+    },
+    "notificaciones": {
+      "approach": "direct",
+      "library": "MatSnackBar",
+      "evidence": [{ "uses": "MatSnackBar directo", "files": 2, "where": ["src/app/features/clientes/cliente-detalle/cliente-detalle.component.ts", "src/app/features/clientes/cliente-form/cliente-form.component.ts"] }],
+      "errorInterceptor": null,
+      "exceptions": []
+    },
+    "modales": {
+      "approach": "direct",
+      "library": "MatDialog",
+      "evidence": [{ "file": "src/app/features/clientes/cliente-detalle/cliente-detalle.component.ts", "detail": "dialog.open(ConfirmDialogComponent, { data }).afterClosed()" }],
+      "dataPassing": "MAT_DIALOG_DATA",
+      "result": "afterClosed() + MatDialogRef.close(boolean)",
+      "exceptions": []
+    }
   },
   "routes": [
     { "path": "", "redirectTo": "clientes" },

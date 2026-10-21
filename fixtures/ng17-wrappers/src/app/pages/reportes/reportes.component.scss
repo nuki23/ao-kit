@@ -13,6 +13,10 @@
   margin-bottom: $space-4;
 }
 
+.reportes__error {
+  color: $color-danger;
+}
+
 .reportes__tabla {
   width: 100%;
   border-collapse: collapse;

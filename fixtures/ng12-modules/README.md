@@ -23,6 +23,8 @@ No se instala ni se compila: el escáner solo lee los archivos.
 | Guard de clase (`implements CanActivate`) | `core/guards/auth.guard.ts` | routes |
 | `entryComponents` (deprecated, todavía presente en repos viejos) para el diálogo | `shared/shared.module.ts` | ngmodules (tolerarlo) |
 | Servicio provisto en `providers` del módulo (`@Injectable()` sin `providedIn`) frente a `providedIn: 'root'` | `features/pedidos/pedidos.service.ts` | services |
+| **Clase base de API**: `ApiService` abstracta (constructor con `HttpClient`) arma la URL desde `environment` y desempaqueta `RespuestaApi<T> { data, meta }` con `map((r) => r.data)`; `ClientesService` la extiende y `PedidosService` no (excepción) | `core/api/`, `core/services/clientes.service.ts` | facades (4.13), patterns.api |
+| **Notificaciones con uso directo**: `MatSnackBar` en `cliente-form` y `cliente-detalle`, sin fachada (`MatSnackBarModule` en `MaterialModule`) | `features/clientes/` | patterns.notificaciones (approach direct) |
 | Rutas con `loadChildren` a módulo y `RouterModule.forChild` | `app-routing.module.ts`, `*-routing.module.ts` | routes |
 | Tema de Material en SCSS (`mat.define-palette`, `define-light-theme`) y variables SCSS | `src/styles/_theme.scss`, `_variables.scss` | tokens |
 

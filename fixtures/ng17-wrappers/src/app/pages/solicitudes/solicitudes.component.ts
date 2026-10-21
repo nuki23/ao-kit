@@ -1,16 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { CatalogosService, Opcion } from '@core/services/catalogos.service';
-import { Solicitud, SolicitudesService } from '@core/services/solicitudes.service';
+import { NotificacionesService } from '@core/services/notificaciones.service';
 import { StatusBadgeComponent } from '@shared/components/status-badge/status-badge.component';
 import { MimiInputComponent } from '@shared/components/ui/mimi-input/mimi-input.component';
 import { MimiSelectComponent } from '@shared/components/ui/mimi-select/mimi-select.component';
 import { InputEffectDirective } from '@shared/directives/input-effect.directive';
 import { MimiTypeDirective } from '@shared/directives/mimi-type.directive';
+import { noSoloEspacios } from '@shared/validators/no-solo-espacios.validator';
+import { SolicitudesStore } from './solicitudes.store';
 
 @Component({
   selector: 'app-solicitudes',
@@ -19,6 +22,7 @@ import { MimiTypeDirective } from '@shared/directives/mimi-type.directive';
     CommonModule,
     ReactiveFormsModule,
     NzButtonModule,
+    NzIconModule,
     NzInputModule,
     NzSelectModule,
     MimiSelectComponent,
@@ -27,39 +31,30 @@ import { MimiTypeDirective } from '@shared/directives/mimi-type.directive';
     MimiTypeDirective,
     StatusBadgeComponent,
   ],
+  providers: [SolicitudesStore],
   templateUrl: './solicitudes.component.html',
   styleUrls: ['./solicitudes.component.scss'],
 })
 export class SolicitudesComponent implements OnInit {
+  // signalStore no tiene un tipo de clase para el constructor: se obtiene con inject().
+  readonly store = inject(SolicitudesStore);
+
   tipos: Opcion[] = [];
-  solicitudes: Solicitud[] = [];
-  cargando = false;
 
   form = this.fb.nonNullable.group({
     tipo: ['', Validators.required],
-    descripcion: ['', [Validators.required, Validators.maxLength(200)]],
+    descripcion: ['', [Validators.required, Validators.maxLength(200), noSoloEspacios()]],
   });
 
   constructor(
     private fb: FormBuilder,
-    private solicitudesService: SolicitudesService,
     private catalogosService: CatalogosService,
+    private notificaciones: NotificacionesService,
   ) {}
 
   ngOnInit(): void {
     this.catalogosService.tiposSolicitud().subscribe((tipos) => (this.tipos = tipos));
-    this.cargar();
-  }
-
-  cargar(): void {
-    this.cargando = true;
-    this.solicitudesService.listar().subscribe({
-      next: (data) => {
-        this.solicitudes = data;
-        this.cargando = false;
-      },
-      error: () => (this.cargando = false),
-    });
+    this.store.cargar();
   }
 
   enviar(): void {
@@ -67,9 +62,9 @@ export class SolicitudesComponent implements OnInit {
       this.form.markAllAsTouched();
       return;
     }
-    this.solicitudesService.crear(this.form.getRawValue()).subscribe(() => {
+    this.store.crear(this.form.getRawValue()).subscribe(() => {
       this.form.reset();
-      this.cargar();
+      this.notificaciones.exito('Solicitud enviada.');
     });
   }
 }

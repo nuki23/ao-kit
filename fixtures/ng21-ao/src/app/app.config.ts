@@ -1,8 +1,13 @@
 import { provideHttpClient, withFetch } from '@angular/common/http';
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import {
+  ApplicationConfig,
+  importProvidersFrom,
+  provideBrowserGlobalErrorListeners,
+} from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { es_ES, provideNzI18n } from 'ng-zorro-antd/i18n';
+import { NzModalModule } from 'ng-zorro-antd/modal';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -12,5 +17,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch()),
     provideAnimationsAsync(),
     provideNzI18n(es_ES),
+    // NzModalService no es providedIn: 'root'; ConfirmService (root) lo necesita aquí.
+    importProvidersFrom(NzModalModule),
   ],
 };

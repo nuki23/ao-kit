@@ -3,14 +3,16 @@
   subtitle="Administra los proveedores registrados."
   actionLabel="Nuevo proveedor"
   (action)="crear()"
-/>
+>
+  <button nz-button nzType="text" type="button" (click)="ayuda()">Ayuda</button>
+</app-page-header>
 
 <div class="mb-4 max-w-sm">
   <input
     nz-input
     placeholder="Buscar por nombre"
     [value]="filtro()"
-    (input)="filtro.set($any($event.target).value)"
+    (input)="buscar($any($event.target).value)"
   />
 </div>
 
@@ -24,8 +26,13 @@
 } @else {
   <app-custom-table
     [columns]="columns"
-    [data]="filtrados()"
+    [data]="proveedores.value()?.items ?? []"
     [loading]="proveedores.isLoading()"
+    [serverPaging]="true"
+    [total]="proveedores.value()?.total ?? 0"
+    [pageIndex]="pagina()"
+    [pageSize]="tamano()"
+    (pageChange)="pagina.set($event)"
     (rowClick)="ver($event)"
   />
 }

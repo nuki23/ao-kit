@@ -44,7 +44,7 @@
   </nz-form-item>
 
   <div class="flex justify-end gap-2">
-    <button nz-button type="button" (click)="form.reset()">Limpiar</button>
+    <button nz-button type="button" (click)="cancelar()">Cancelar</button>
     <button nz-button nzType="primary" type="submit" [nzLoading]="guardando()">
       @if (esEdicion()) {
         Guardar cambios
