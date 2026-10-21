@@ -1,0 +1,58 @@
+<section class="page">
+  <h1 class="page__title">Mi perfil</h1>
+
+  <form class="page__form" [formGroup]="form" (ngSubmit)="guardar()">
+    <mimi-input>
+      <input
+        nz-input
+        mimi-input
+        inputEffectDirective
+        mimiType="outline"
+        formControlName="nombre"
+        placeholder="Nombre completo"
+        [ngClass]="{
+          'input-error': form.controls.nombre.invalid && form.controls.nombre.dirty,
+          fill: form.controls.nombre.value
+        }"
+      />
+    </mimi-input>
+
+    <mimi-input>
+      <input
+        nz-input
+        mimi-input
+        inputEffectDirective
+        mimiType="outline"
+        type="email"
+        formControlName="correo"
+        placeholder="Correo electrónico"
+        [ngClass]="{
+          'input-error': form.controls.correo.invalid && form.controls.correo.dirty,
+          fill: form.controls.correo.value
+        }"
+      />
+    </mimi-input>
+
+    <mimi-select>
+      <nz-select
+        mimi-select
+        inputEffectDirective
+        mimiType="outline"
+        formControlName="ciudad"
+        nzShowSearch
+        nzPlaceHolder="Ciudad"
+        [nzOptionHeightPx]="42"
+        [nzOptionOverflowSize]="10"
+        [ngClass]="{
+          'input-error': form.controls.ciudad.invalid && form.controls.ciudad.dirty,
+          fill: form.controls.ciudad.value
+        }"
+      >
+        <nz-option *ngFor="let ciudad of ciudades" [nzValue]="ciudad.id" [nzLabel]="ciudad.nombre"></nz-option>
+      </nz-select>
+    </mimi-select>
+
+    <button nz-button nzType="primary" type="submit">Guardar</button>
+    <p *ngIf="guardado" class="page__ok">Perfil actualizado.</p>
+  </form>
+</section>

@@ -1,0 +1,31 @@
+<div class="usuarios">
+  <bo-card titulo="Resumen">
+    <p>{{ usuarios.length }} usuarios en la vista actual.</p>
+  </bo-card>
+
+  <bo-card titulo="Usuarios" [elevada]="true">
+    <bo-button-group
+      [opciones]="filtros"
+      [seleccion]="filtro"
+      (seleccionChange)="cambiarFiltro($event)"
+    ></bo-button-group>
+
+    <table class="tabla">
+      <tr *ngFor="let usuario of usuarios">
+        <td>{{ usuario.nombre }}</td>
+        <td>{{ usuario.correo }}</td>
+        <td>
+          <ui-button
+            *ngIf="usuario.activo"
+            variant="danger"
+            (clicked)="desactivar(usuario)"
+          >Desactivar</ui-button>
+        </td>
+      </tr>
+    </table>
+
+    <div boCardPie>
+      <ui-button variant="primary" [loading]="invitando" (clicked)="invitar()">Invitar usuario</ui-button>
+    </div>
+  </bo-card>
+</div>

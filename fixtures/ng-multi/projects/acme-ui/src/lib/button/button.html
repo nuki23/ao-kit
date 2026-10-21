@@ -1,0 +1,11 @@
+<button
+  [class]="['ui-button', 'ui-button--' + variant()]"
+  [type]="type()"
+  [disabled]="disabled() || loading()"
+  (click)="clicked.emit($event)"
+>
+  @if (loading()) {
+    <ui-spinner size="sm" />
+  }
+  <ng-content />
+</button>

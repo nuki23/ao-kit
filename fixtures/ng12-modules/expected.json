@@ -1,0 +1,192 @@
+{
+  "$comment": "Oráculo de lo que ao scan debe detectar en este fixture. Formato informal hasta congelar el esquema de index.json (3.1); los detectores de M4 lo usan como referencia. Rutas relativas al fixture, en POSIX. Los usos cuentan elementos en templates (conteos sacados con grep; ver nota de M4 en TASKS.md).",
+  "stack": {
+    "angularVersion": "12",
+    "builder": "@angular-devkit/build-angular:browser",
+    "bootstrap": "bootstrapModule",
+    "projectStructure": "ngmodule",
+    "uiLibraries": [{ "name": "@angular/material", "prefixes": ["mat-"] }],
+    "styles": "scss",
+    "theme": "src/styles/_theme.scss",
+    "aliases": {
+      "@core/*": "src/app/core/*",
+      "@shared/*": "src/app/shared/*",
+      "@env/*": "src/environments/*"
+    }
+  },
+  "components": [
+    {
+      "selector": "app-field",
+      "source": "src/app/shared/components/field/",
+      "kind": "wrapper",
+      "wraps": "mat-form-field",
+      "criteria": {
+        "a_sameProjectedElement": { "met": true, "element": "mat-form-field", "uses": 5, "of": 5 },
+        "b_stylesOverrideLibrary": { "met": true, "selectors": [":host ::ng-deep .mat-form-field", ".mat-form-field-wrapper", ".mat-form-field-outline"] },
+        "c_projectedHasWrapperAttribute": { "met": false }
+      }
+    },
+    {
+      "selector": "app-card",
+      "source": "src/app/shared/components/card/",
+      "kind": "slot-container",
+      "criteria": {
+        "a_sameProjectedElement": { "met": false, "$comment": "proyecta mat-table + app-field, un form, un <dl> y otra mat-table" },
+        "b_stylesOverrideLibrary": { "met": true, "selectors": [":host ::ng-deep .mat-card-header-text", ".mat-card-actions"] },
+        "c_projectedHasWrapperAttribute": { "met": false }
+      },
+      "slots": ["default", "[cardActions]"]
+    },
+    { "selector": "app-field-error", "source": "src/app/shared/components/field-error/", "kind": "component", "internal": true },
+    { "selector": "app-confirm-dialog", "source": "src/app/shared/components/confirm-dialog/", "kind": "component", "openedBy": "MatDialog.open", "entryComponent": true }
+  ],
+  "usages": {
+    "app-field": {
+      "count": 5,
+      "files": [
+        "src/app/features/clientes/cliente-form/cliente-form.component.html",
+        "src/app/features/clientes/clientes-lista/clientes-lista.component.html"
+      ]
+    },
+    "app-card": {
+      "count": 4,
+      "files": [
+        "src/app/features/clientes/cliente-detalle/cliente-detalle.component.html",
+        "src/app/features/clientes/cliente-form/cliente-form.component.html",
+        "src/app/features/clientes/clientes-lista/clientes-lista.component.html",
+        "src/app/features/pedidos/pedidos-lista/pedidos-lista.component.html"
+      ]
+    },
+    "app-field-error": {
+      "count": 1,
+      "files": ["src/app/shared/components/field/field.component.html"]
+    },
+    "mat-form-field": {
+      "count": 5,
+      "wrapped": 5,
+      "wrappedBy": "app-field",
+      "unwrapped": []
+    }
+  },
+  "ngModules": [
+    {
+      "name": "AppModule",
+      "source": "src/app/app.module.ts",
+      "declarations": ["AppComponent"],
+      "imports": ["BrowserModule", "BrowserAnimationsModule", "CoreModule", "MatToolbarModule", "MatButtonModule", "AppRoutingModule"],
+      "exports": [],
+      "bootstrap": ["AppComponent"]
+    },
+    {
+      "name": "AppRoutingModule",
+      "source": "src/app/app-routing.module.ts",
+      "imports": ["RouterModule.forRoot"],
+      "exports": ["RouterModule"]
+    },
+    {
+      "name": "CoreModule",
+      "source": "src/app/core/core.module.ts",
+      "imports": ["HttpClientModule"],
+      "providers": ["HTTP_INTERCEPTORS → AuthInterceptor"],
+      "exports": []
+    },
+    {
+      "name": "MaterialModule",
+      "source": "src/app/shared/material.module.ts",
+      "$comment": "imports y exports vienen de la constante MATERIAL_MODULES (hay que resolver el identificador)",
+      "imports": ["MatButtonModule", "MatCardModule", "MatDialogModule", "MatFormFieldModule", "MatIconModule", "MatInputModule", "MatSelectModule", "MatTableModule"],
+      "exports": ["MatButtonModule", "MatCardModule", "MatDialogModule", "MatFormFieldModule", "MatIconModule", "MatInputModule", "MatSelectModule", "MatTableModule"]
+    },
+    {
+      "name": "SharedModule",
+      "source": "src/app/shared/shared.module.ts",
+      "declarations": ["FieldComponent", "FieldErrorComponent", "CardComponent", "ConfirmDialogComponent", "AutofocusDirective", "EstadoPipe"],
+      "imports": ["CommonModule", "ReactiveFormsModule", "MaterialModule"],
+      "exports": ["CommonModule", "ReactiveFormsModule", "MaterialModule", "FieldComponent", "CardComponent", "ConfirmDialogComponent", "AutofocusDirective", "EstadoPipe"],
+      "declaredNotExported": ["FieldErrorComponent"],
+      "entryComponents": ["ConfirmDialogComponent"]
+    },
+    {
+      "name": "ClientesModule",
+      "source": "src/app/features/clientes/clientes.module.ts",
+      "declarations": ["ClientesListaComponent", "ClienteFormComponent", "ClienteDetalleComponent"],
+      "imports": ["SharedModule", "ClientesRoutingModule"],
+      "visibleInTemplates": {
+        "components": ["app-card", "app-confirm-dialog", "app-field"],
+        "directives": ["[appAutofocus]"],
+        "pipes": ["estado"],
+        "angularModules": ["CommonModule", "ReactiveFormsModule", "RouterModule"],
+        "uiModules": ["MatButtonModule", "MatCardModule", "MatDialogModule", "MatFormFieldModule", "MatIconModule", "MatInputModule", "MatSelectModule", "MatTableModule"]
+      },
+      "notVisible": ["app-field-error"]
+    },
+    {
+      "name": "ClientesRoutingModule",
+      "source": "src/app/features/clientes/clientes-routing.module.ts",
+      "imports": ["RouterModule.forChild"],
+      "exports": ["RouterModule"]
+    },
+    {
+      "name": "PedidosModule",
+      "source": "src/app/features/pedidos/pedidos.module.ts",
+      "declarations": ["PedidosListaComponent"],
+      "imports": ["CommonModule", "MatTableModule", "MatButtonModule", "PedidosRoutingModule"],
+      "providers": ["PedidosService"],
+      "schemas": ["CUSTOM_ELEMENTS_SCHEMA"],
+      "visibleInTemplates": {
+        "components": [],
+        "directives": [],
+        "pipes": [],
+        "angularModules": ["CommonModule", "RouterModule"],
+        "uiModules": ["MatButtonModule", "MatTableModule"]
+      },
+      "notVisible": ["app-card", "app-field", "app-field-error"]
+    },
+    {
+      "name": "PedidosRoutingModule",
+      "source": "src/app/features/pedidos/pedidos-routing.module.ts",
+      "imports": ["RouterModule.forChild"],
+      "exports": ["RouterModule"]
+    }
+  ],
+  "warnings": [
+    {
+      "message": "app-card usado en pedidos-lista pero no disponible en PedidosModule",
+      "file": "src/app/features/pedidos/pedidos-lista/pedidos-lista.component.html",
+      "module": "PedidosModule",
+      "$comment": "CUSTOM_ELEMENTS_SCHEMA oculta el error de compilación; en runtime app-card no se renderiza"
+    }
+  ],
+  "conventions": {
+    "standalone": { "standalone": 0, "total": 11, "percent": 0, "$comment": "9 componentes + 1 directiva + 1 pipe, todos declarados en NgModules" },
+    "di": { "constructor": 10, "inject": 0, "majority": "constructor" },
+    "inputs": { "decorator": 5, "signal": 0, "majority": "decorator" },
+    "outputs": { "decorator": 1, "signal": 0, "emitter": "EventEmitter" },
+    "controlFlow": { "structuralDirectives": 8, "blocks": 0, "majority": "structuralDirectives", "$comment": "sin contar los 20 *matHeaderCellDef/*matCellDef/*matRowDef de mat-table" },
+    "forms": "reactive sin tipar (FormGroup, FormControl)",
+    "guards": "clase (implements CanActivate)",
+    "services": { "providedInRoot": 2, "moduleProviders": 1 },
+    "fileNaming": "kebab-case.component.ts / .module.ts / .service.ts / .pipe.ts / .directive.ts",
+    "featureLayout": "features/<feature>/{<feature>.module.ts, <feature>-routing.module.ts, componentes}"
+  },
+  "routes": [
+    { "path": "", "redirectTo": "clientes" },
+    {
+      "path": "clientes",
+      "loadChildren": "src/app/features/clientes/clientes.module.ts#ClientesModule",
+      "children": [
+        { "path": "", "component": "ClientesListaComponent" },
+        { "path": "nuevo", "component": "ClienteFormComponent" },
+        { "path": ":id", "component": "ClienteDetalleComponent" },
+        { "path": ":id/editar", "component": "ClienteFormComponent" }
+      ]
+    },
+    {
+      "path": "pedidos",
+      "canActivate": ["AuthGuard"],
+      "loadChildren": "src/app/features/pedidos/pedidos.module.ts#PedidosModule",
+      "children": [{ "path": "", "component": "PedidosListaComponent" }]
+    },
+    { "path": "**", "redirectTo": "clientes" }
+  ]
+}

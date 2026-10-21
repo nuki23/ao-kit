@@ -1,0 +1,32 @@
+@use 'styles/variables' as *;
+
+.page {
+  max-width: 720px;
+  padding: $space-6;
+}
+
+.page__title {
+  color: $color-primary;
+}
+
+.page__form {
+  display: grid;
+  gap: $space-2;
+  margin-bottom: $space-6;
+}
+
+.page__list {
+  padding: 0;
+  list-style: none;
+}
+
+.page__item {
+  display: flex;
+  justify-content: space-between;
+  padding: $space-3 0;
+  border-bottom: 1px solid $color-border;
+}
+
+.page__empty {
+  color: $color-muted;
+}

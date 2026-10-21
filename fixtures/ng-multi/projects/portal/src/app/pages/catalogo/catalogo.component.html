@@ -1,0 +1,12 @@
+<ui-card title="Catálogo">
+  <div class="articulos">
+    <article *ngFor="let articulo of articulos" class="articulo">
+      <h4>{{ articulo.nombre }}</h4>
+      <p>{{ articulo.precio | currency }}</p>
+      <app-button [loading]="agregando === articulo.id" (clicked)="agregar(articulo)">Agregar</app-button>
+    </article>
+  </div>
+  <div uiCardFooter>
+    <app-button variant="secondary" [loading]="cargandoMas" (clicked)="cargarMas()">Ver más</app-button>
+  </div>
+</ui-card>

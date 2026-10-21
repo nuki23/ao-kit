@@ -1,0 +1,16 @@
+.usuarios {
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+}
+
+.tabla {
+  width: 100%;
+  margin-top: 12px;
+  border-collapse: collapse;
+}
+
+.tabla td {
+  padding: 8px;
+  border-bottom: 1px solid #e5e7eb;
+}

@@ -1,0 +1,56 @@
+<app-page-header
+  [title]="esEdicion() ? 'Editar proveedor' : 'Nuevo proveedor'"
+  backLink="/proveedores"
+/>
+
+<form nz-form nzLayout="vertical" class="max-w-xl rounded-card bg-white p-6" [formGroup]="form" (ngSubmit)="guardar()">
+  <nz-form-item>
+    <nz-form-label nzRequired>Nombre</nz-form-label>
+    <nz-form-control nzErrorTip="El nombre es obligatorio">
+      <input nz-input formControlName="nombre" />
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label nzRequired>Documento</nz-form-label>
+    <nz-form-control nzErrorTip="El documento es obligatorio">
+      <input nz-input formControlName="documento" />
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label nzRequired>Ciudad</nz-form-label>
+    <nz-form-control nzErrorTip="Selecciona una ciudad">
+      <nz-select formControlName="ciudad" nzPlaceHolder="Selecciona">
+        @for (ciudad of ciudades; track ciudad) {
+          <nz-option [nzValue]="ciudad" [nzLabel]="ciudad" />
+        }
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label nzRequired>Correo</nz-form-label>
+    <nz-form-control nzErrorTip="Escribe un correo válido">
+      <input nz-input type="email" formControlName="correo" />
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label>Activo</nz-form-label>
+    <nz-form-control>
+      <nz-switch formControlName="activo" />
+    </nz-form-control>
+  </nz-form-item>
+
+  <div class="flex justify-end gap-2">
+    <button nz-button type="button" (click)="form.reset()">Limpiar</button>
+    <button nz-button nzType="primary" type="submit" [nzLoading]="guardando()">
+      @if (esEdicion()) {
+        Guardar cambios
+      } @else {
+        Crear proveedor
+      }
+    </button>
+  </div>
+</form>

@@ -1,0 +1,10 @@
+<button
+  type="button"
+  class="app-button"
+  [ngClass]="'app-button--' + variant"
+  [disabled]="disabled || loading"
+  (click)="clicked.emit($event)"
+>
+  <span *ngIf="loading" class="app-button__loader"></span>
+  <ng-content></ng-content>
+</button>

@@ -1,0 +1,19 @@
+.ui-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.ui-card--elevated {
+  box-shadow: 0 4px 12px rgb(15 23 42 / 0.08);
+}
+
+.ui-card__header,
+.ui-card__body,
+.ui-card__footer {
+  padding: 16px;
+}
+
+.ui-card__footer:empty {
+  display: none;
+}

@@ -1,0 +1,19 @@
+<section class="page">
+  <h1 class="page__title">Reportes</h1>
+
+  <nz-select
+    class="reportes__periodo"
+    nzPlaceHolder="Periodo"
+    [ngModel]="periodo"
+    (ngModelChange)="cambiarPeriodo($event)"
+  >
+    <nz-option *ngFor="let p of periodos" [nzValue]="p.id" [nzLabel]="p.nombre"></nz-option>
+  </nz-select>
+
+  <table class="reportes__tabla">
+    <tr *ngFor="let fila of filas">
+      <td>{{ fila.concepto }}</td>
+      <td>{{ fila.total | number }}</td>
+    </tr>
+  </table>
+</section>

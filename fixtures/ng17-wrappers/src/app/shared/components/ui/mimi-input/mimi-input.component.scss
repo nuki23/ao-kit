@@ -1,0 +1,40 @@
+@use 'styles/variables' as *;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+[mimi-group] {
+  position: relative;
+  margin-bottom: $space-4;
+}
+
+:host ::ng-deep .ant-input[mimi-input] {
+  height: $control-height;
+  padding: 0 $space-3;
+  border-radius: $radius-md;
+
+  &.mimi-outline {
+    border: 1px solid $color-border;
+    background: transparent;
+  }
+
+  &.mimi-fill {
+    border: none;
+    background: $color-fill;
+  }
+
+  &.is-focused {
+    border-color: $color-primary;
+    box-shadow: none;
+  }
+
+  &.fill {
+    background: $color-fill;
+  }
+
+  &.input-error {
+    border-color: $color-danger;
+  }
+}

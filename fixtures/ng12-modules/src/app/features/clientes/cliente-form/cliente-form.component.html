@@ -1,0 +1,38 @@
+<app-card [titulo]="id ? 'Editar cliente' : 'Nuevo cliente'">
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="form">
+    <app-field [error]="errorDe('nombre')">
+      <mat-form-field appearance="outline">
+        <mat-label>Nombre</mat-label>
+        <input matInput formControlName="nombre" appAutofocus />
+      </mat-form-field>
+    </app-field>
+
+    <app-field [error]="errorDe('documento')">
+      <mat-form-field appearance="outline">
+        <mat-label>Documento</mat-label>
+        <input matInput formControlName="documento" />
+      </mat-form-field>
+    </app-field>
+
+    <app-field [error]="errorDe('correo')">
+      <mat-form-field appearance="outline">
+        <mat-label>Correo</mat-label>
+        <input matInput type="email" formControlName="correo" />
+      </mat-form-field>
+    </app-field>
+
+    <app-field [error]="errorDe('tipo')">
+      <mat-form-field appearance="outline">
+        <mat-label>Tipo de cliente</mat-label>
+        <mat-select formControlName="tipo">
+          <mat-option *ngFor="let tipo of tipos" [value]="tipo.id">{{ tipo.nombre }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </app-field>
+  </form>
+
+  <div cardActions>
+    <button mat-button type="button" (click)="cancelar()">Cancelar</button>
+    <button mat-flat-button color="primary" type="button" (click)="guardar()">Guardar</button>
+  </div>
+</app-card>

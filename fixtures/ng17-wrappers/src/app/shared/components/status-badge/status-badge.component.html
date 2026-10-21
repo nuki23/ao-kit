@@ -1,0 +1,4 @@
+<span class="badge" [ngClass]="['badge--' + estado, compact ? 'badge--compact' : '']">
+  <span *ngIf="!compact" class="badge__dot"></span>
+  {{ etiqueta }}
+</span>

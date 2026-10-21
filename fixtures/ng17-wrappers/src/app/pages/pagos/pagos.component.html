@@ -1,0 +1,66 @@
+<section class="page">
+  <h1 class="page__title">Pagos</h1>
+
+  <form class="page__form" [formGroup]="form" (ngSubmit)="pagar()">
+    <mimi-select>
+      <nz-select
+        mimi-select
+        inputEffectDirective
+        mimiType="outline"
+        formControlName="banco"
+        nzShowSearch
+        nzPlaceHolder="Selecciona tu banco"
+        [nzOptionHeightPx]="42"
+        [nzOptionOverflowSize]="10"
+        [ngClass]="{
+          'input-error': form.controls.banco.invalid && form.controls.banco.dirty,
+          fill: form.controls.banco.value
+        }"
+      >
+        <nz-option *ngFor="let banco of bancos" [nzValue]="banco.id" [nzLabel]="banco.nombre"></nz-option>
+      </nz-select>
+    </mimi-select>
+
+    <mimi-input>
+      <input
+        nz-input
+        mimi-input
+        inputEffectDirective
+        mimiType="outline"
+        type="number"
+        formControlName="monto"
+        placeholder="Monto"
+        [ngClass]="{
+          'input-error': form.controls.monto.invalid && form.controls.monto.dirty,
+          fill: form.controls.monto.value
+        }"
+      />
+    </mimi-input>
+
+    <mimi-input>
+      <input
+        nz-input
+        mimi-input
+        inputEffectDirective
+        mimiType="fill"
+        formControlName="referencia"
+        placeholder="Referencia de pago"
+        [ngClass]="{
+          'input-error': form.controls.referencia.invalid && form.controls.referencia.dirty,
+          fill: form.controls.referencia.value
+        }"
+      />
+    </mimi-input>
+
+    <button nz-button nzType="primary" type="submit">Pagar</button>
+  </form>
+
+  <h2>Pagos recientes</h2>
+  <p *ngIf="recientes.length === 0" class="page__empty">Aún no tienes pagos.</p>
+  <ul class="page__list">
+    <li *ngFor="let pago of recientes" class="page__item">
+      <span>{{ pago.referencia }} · {{ pago.monto | currency }}</span>
+      <app-status-badge [estado]="pago.estado" [compact]="true"></app-status-badge>
+    </li>
+  </ul>
+</section>

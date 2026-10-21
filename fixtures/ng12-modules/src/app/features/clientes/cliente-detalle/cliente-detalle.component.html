@@ -1,0 +1,21 @@
+<ng-container *ngIf="cliente; else cargando">
+  <app-card [titulo]="cliente.nombre" [subtitulo]="cliente.documento" [cerrable]="true" (cerrar)="volver()">
+    <dl class="datos">
+      <dt>Correo</dt>
+      <dd>{{ cliente.correo }}</dd>
+      <dt>Tipo</dt>
+      <dd>{{ cliente.tipo }}</dd>
+      <dt>Estado</dt>
+      <dd>{{ cliente.activo | estado }}</dd>
+    </dl>
+
+    <div cardActions>
+      <a mat-button [routerLink]="['/clientes', cliente.id, 'editar']">Editar</a>
+      <button mat-flat-button color="warn" (click)="eliminar(cliente)">Eliminar</button>
+    </div>
+  </app-card>
+</ng-container>
+
+<ng-template #cargando>
+  <p class="cargando">Cargando…</p>
+</ng-template>

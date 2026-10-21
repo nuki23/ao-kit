@@ -1,0 +1,10 @@
+@use 'styles/theme';
+@use 'styles/variables' as *;
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: $font-family-base;
+  background: $color-background;
+}

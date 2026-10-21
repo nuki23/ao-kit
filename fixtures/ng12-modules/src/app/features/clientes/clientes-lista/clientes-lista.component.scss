@@ -1,0 +1,13 @@
+@use 'styles/variables' as *;
+
+.tabla {
+  width: 100%;
+}
+
+.tabla__fila {
+  cursor: pointer;
+}
+
+.vacio {
+  color: $color-muted;
+}

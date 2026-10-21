@@ -1,0 +1,32 @@
+<app-card titulo="Clientes" subtitulo="Clientes registrados en el sistema">
+  <app-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Buscar por nombre</mat-label>
+      <input matInput [formControl]="busqueda" />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+  </app-field>
+
+  <table mat-table [dataSource]="filtrados" class="tabla">
+    <ng-container matColumnDef="nombre">
+      <th mat-header-cell *matHeaderCellDef>Nombre</th>
+      <td mat-cell *matCellDef="let cliente">{{ cliente.nombre }}</td>
+    </ng-container>
+    <ng-container matColumnDef="documento">
+      <th mat-header-cell *matHeaderCellDef>Documento</th>
+      <td mat-cell *matCellDef="let cliente">{{ cliente.documento }}</td>
+    </ng-container>
+    <ng-container matColumnDef="estado">
+      <th mat-header-cell *matHeaderCellDef>Estado</th>
+      <td mat-cell *matCellDef="let cliente">{{ cliente.activo | estado }}</td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+    <tr mat-row *matRowDef="let row; columns: columnas" class="tabla__fila" (click)="ver(row)"></tr>
+  </table>
+
+  <p *ngIf="filtrados.length === 0" class="vacio">No hay clientes que coincidan.</p>
+
+  <div cardActions>
+    <a mat-flat-button color="primary" routerLink="nuevo">Nuevo cliente</a>
+  </div>
+</app-card>

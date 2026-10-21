@@ -1,0 +1,26 @@
+.app-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.app-button--primary {
+  background: #2563eb;
+  color: #fff;
+}
+
+.app-button--secondary {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.app-button__loader {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 6px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+}

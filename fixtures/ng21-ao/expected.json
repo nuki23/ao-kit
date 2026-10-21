@@ -1,0 +1,98 @@
+{
+  "$comment": "Oráculo de lo que ao scan debe detectar en este fixture. Formato informal hasta congelar el esquema de index.json (3.1); los detectores de M4 lo usan como referencia. Rutas relativas al fixture, en POSIX. Los usos cuentan elementos en templates.",
+  "stack": {
+    "angularVersion": "21",
+    "builder": "@angular/build:application",
+    "bootstrap": "bootstrapApplication",
+    "projectStructure": "standalone",
+    "uiLibraries": [{ "name": "ng-zorro-antd", "prefixes": ["nz-"] }],
+    "icons": "lucide-angular",
+    "styles": "css",
+    "tailwind": "4",
+    "theme": "src/theme.less",
+    "aliases": {
+      "@shared/*": "src/app/shared/*",
+      "@pages/*": "src/app/pages/*"
+    }
+  },
+  "wrappers": [],
+  "notWrappers": [
+    {
+      "selector": "app-page-header",
+      "reason": "tiene <ng-content /> y en detalle.html se le proyectan botones nz-button, pero su template tiene contenido propio (título, subtítulo, volver); no es un wrapper"
+    },
+    {
+      "selector": "app-custom-table",
+      "reason": "usa nz-table dentro de su template (composición), no la proyecta"
+    }
+  ],
+  "sharedComponents": [
+    { "selector": "app-page-header", "source": "src/app/shared/components/page-header/", "inputs": ["title", "subtitle", "backLink", "actionLabel"], "requiredInputs": ["title"], "outputs": ["action"] },
+    { "selector": "app-custom-table", "source": "src/app/shared/components/custom-table/", "inputs": ["columns", "data", "loading", "pageSize", "emptyText"], "requiredInputs": ["columns", "data"], "outputs": ["rowClick"] },
+    { "selector": "app-empty-state", "source": "src/app/shared/components/empty-state/", "inputs": ["title", "description", "actionLabel"], "requiredInputs": ["title"], "outputs": ["action"] }
+  ],
+  "usages": {
+    "app-page-header": {
+      "count": 6,
+      "files": [
+        "src/app/pages/ejemplos/ejemplos.html",
+        "src/app/pages/proveedores/crear-editar/crear-editar.html",
+        "src/app/pages/proveedores/detalle/detalle.html",
+        "src/app/pages/proveedores/listado/listado.html"
+      ]
+    },
+    "app-custom-table": {
+      "count": 3,
+      "files": [
+        "src/app/pages/ejemplos/ejemplos.html",
+        "src/app/pages/proveedores/listado/listado.html"
+      ]
+    },
+    "app-empty-state": {
+      "count": 5,
+      "files": [
+        "src/app/pages/ejemplos/ejemplos.html",
+        "src/app/pages/proveedores/detalle/detalle.html",
+        "src/app/pages/proveedores/listado/listado.html",
+        "src/app/shared/components/custom-table/custom-table.html"
+      ]
+    },
+    "showcaseOnly": {
+      "$comment": "Usos fuera de /ejemplos (los del showcase no cuentan como uso real)",
+      "app-page-header": 3,
+      "app-custom-table": 1,
+      "app-empty-state": 3
+    }
+  },
+  "conventions": {
+    "standalone": {
+      "standalone": 8,
+      "total": 8,
+      "explicitFlag": 0,
+      "percent": 100,
+      "$comment": "Ningún componente declara standalone: es el valor por defecto desde v19"
+    },
+    "di": { "constructor": 0, "inject": 4, "majority": "inject" },
+    "inputs": { "decorator": 0, "signal": 14, "majority": "signal" },
+    "outputs": { "decorator": 0, "signal": 3 },
+    "controlFlow": { "structuralDirectives": 0, "blocks": 20, "majority": "blocks" },
+    "changeDetection": { "onPush": 8, "default": 0 },
+    "fileNaming": "kebab-case.ts sin sufijo .component (estilo v20+); servicios con .service.ts",
+    "featureLayout": "pages/<feature>/{listado,crear-editar,detalle,data-access}"
+  },
+  "routes": [
+    { "path": "", "redirectTo": "proveedores" },
+    {
+      "path": "proveedores",
+      "loadChildren": "src/app/pages/proveedores/proveedores.routes.ts#PROVEEDORES_ROUTES",
+      "children": [
+        { "path": "", "loadComponent": "src/app/pages/proveedores/listado/listado.ts#Listado" },
+        { "path": "nuevo", "loadComponent": "src/app/pages/proveedores/crear-editar/crear-editar.ts#CrearEditar" },
+        { "path": ":id", "loadComponent": "src/app/pages/proveedores/detalle/detalle.ts#Detalle" },
+        { "path": ":id/editar", "loadComponent": "src/app/pages/proveedores/crear-editar/crear-editar.ts#CrearEditar" }
+      ]
+    },
+    { "path": "ejemplos", "loadComponent": "src/app/pages/ejemplos/ejemplos.ts#Ejemplos", "showcase": true },
+    { "path": "**", "redirectTo": "proveedores" }
+  ]
+}

@@ -1,0 +1,17 @@
+<div class="inicio">
+  <ui-card title="Bienvenido" [elevated]="true">
+    <p>Explora nuestro catálogo y encuentra lo que necesitas.</p>
+    <div uiCardFooter>
+      <ui-button variant="primary" (clicked)="irAlCatalogo()">Ver catálogo</ui-button>
+    </div>
+  </ui-card>
+
+  <ui-card title="Novedades">
+    <ul *ngIf="novedades.length; else sinNovedades">
+      <li *ngFor="let novedad of novedades">{{ novedad.titulo }}</li>
+    </ul>
+    <ng-template #sinNovedades>
+      <p>No hay novedades por ahora.</p>
+    </ng-template>
+  </ui-card>
+</div>

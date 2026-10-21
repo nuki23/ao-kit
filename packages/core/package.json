@@ -1,0 +1,21 @@
+{
+  "name": "@ao-kit/core",
+  "version": "0.0.0",
+  "description": "Esquemas del índice y utilidades compartidas de ao-kit (interno).",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit"
+  }
+}

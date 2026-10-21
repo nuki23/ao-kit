@@ -1,0 +1,33 @@
+@use 'styles/variables' as *;
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  padding: 2px $space-3;
+  border-radius: 999px;
+  font-size: 12px;
+
+  &--compact {
+    padding: 0 $space-2;
+  }
+
+  &--pendiente {
+    color: $color-warning;
+  }
+
+  &--aprobado {
+    color: $color-success;
+  }
+
+  &--rechazado {
+    color: $color-danger;
+  }
+}
+
+.badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}

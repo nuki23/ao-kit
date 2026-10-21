@@ -1,0 +1,18 @@
+.bo-button-group {
+  display: inline-flex;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bo-button-group__opcion {
+  padding: 6px 12px;
+  border: none;
+  background: #fff;
+  cursor: pointer;
+}
+
+.bo-button-group__opcion--activa {
+  background: #1f2937;
+  color: #fff;
+}

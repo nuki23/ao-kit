@@ -1,0 +1,111 @@
+{
+  "$comment": "Oráculo de lo que ao scan debe detectar en este fixture. Formato informal hasta congelar el esquema de index.json (3.1); los detectores de M4 lo usan como referencia. Rutas relativas al fixture, en POSIX. Los usos cuentan elementos en templates.",
+  "stack": {
+    "angularVersion": "17",
+    "builder": "@angular-devkit/build-angular:application",
+    "bootstrap": "bootstrapApplication",
+    "projectStructure": "standalone",
+    "uiLibraries": [{ "name": "ng-zorro-antd", "prefixes": ["nz-"] }],
+    "styles": "scss",
+    "aliases": {
+      "@core/*": "src/app/core/*",
+      "@shared/*": "src/app/shared/*",
+      "@env/*": "src/environments/*"
+    }
+  },
+  "wrappers": [
+    {
+      "selector": "mimi-select",
+      "source": "src/app/shared/components/ui/mimi-select/",
+      "wraps": "nz-select",
+      "evidence": {
+        "template": "solo <div mimi-group><ng-content></ng-content></div>",
+        "styles": ":host ::ng-deep .ant-select[mimi-select]",
+        "projectedIn": 3
+      },
+      "markerAttribute": "mimi-select",
+      "companionDirectives": ["inputEffectDirective", "mimiType"]
+    },
+    {
+      "selector": "mimi-input",
+      "source": "src/app/shared/components/ui/mimi-input/",
+      "wraps": "nz-input",
+      "evidence": {
+        "template": "solo <div mimi-group><ng-content></ng-content></div>",
+        "styles": ":host ::ng-deep .ant-input[mimi-input]",
+        "projectedIn": 5
+      },
+      "markerAttribute": "mimi-input",
+      "companionDirectives": ["inputEffectDirective", "mimiType"]
+    }
+  ],
+  "usages": {
+    "mimi-select": {
+      "count": 3,
+      "files": [
+        "src/app/pages/pagos/pagos.component.html",
+        "src/app/pages/perfil/perfil.component.html",
+        "src/app/pages/solicitudes/solicitudes.component.html"
+      ]
+    },
+    "mimi-input": {
+      "count": 5,
+      "files": [
+        "src/app/pages/pagos/pagos.component.html",
+        "src/app/pages/perfil/perfil.component.html",
+        "src/app/pages/solicitudes/solicitudes.component.html"
+      ]
+    },
+    "app-status-badge": {
+      "count": 2,
+      "files": [
+        "src/app/pages/pagos/pagos.component.html",
+        "src/app/pages/solicitudes/solicitudes.component.html"
+      ]
+    },
+    "nz-select": {
+      "count": 4,
+      "wrapped": 3,
+      "wrappedBy": "mimi-select",
+      "unwrapped": ["src/app/pages/reportes/reportes.component.html"]
+    },
+    "nz-input": {
+      "count": 5,
+      "wrapped": 5,
+      "wrappedBy": "mimi-input",
+      "unwrapped": []
+    }
+  },
+  "conventions": {
+    "standalone": { "standalone": 10, "total": 10, "explicitFlag": 10, "percent": 100 },
+    "di": {
+      "constructor": 10,
+      "inject": 1,
+      "majority": "constructor",
+      "injectFiles": ["src/app/core/guards/auth.guard.ts"]
+    },
+    "inputs": { "decorator": 3, "signal": 0, "majority": "decorator" },
+    "outputs": { "decorator": 0, "signal": 0 },
+    "controlFlow": { "structuralDirectives": 12, "blocks": 0, "majority": "structuralDirectives" },
+    "changeDetection": { "onPush": 0, "default": 8 },
+    "fileNaming": "kebab-case.component.ts / .directive.ts / .service.ts",
+    "wrapperUsage": {
+      "rule": "nz-select siempre dentro de mimi-select",
+      "followed": 3,
+      "total": 4,
+      "exceptions": ["src/app/pages/reportes/reportes.component.html"]
+    }
+  },
+  "routes": [
+    { "path": "", "redirectTo": "solicitudes" },
+    { "path": "solicitudes", "loadComponent": "src/app/pages/solicitudes/solicitudes.component.ts#SolicitudesComponent" },
+    { "path": "pagos", "loadComponent": "src/app/pages/pagos/pagos.component.ts#PagosComponent" },
+    {
+      "path": "perfil",
+      "loadComponent": "src/app/pages/perfil/perfil.component.ts#PerfilComponent",
+      "canActivate": ["authGuard"]
+    },
+    { "path": "reportes", "loadComponent": "src/app/pages/reportes/reportes.component.ts#ReportesComponent" },
+    { "path": "**", "redirectTo": "solicitudes" }
+  ]
+}

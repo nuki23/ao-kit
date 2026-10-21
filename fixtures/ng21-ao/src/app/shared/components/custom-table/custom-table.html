@@ -1,0 +1,22 @@
+@if (isEmpty()) {
+  <app-empty-state title="Sin resultados" [description]="emptyText()" />
+} @else {
+  <nz-table #tabla nzSize="middle" [nzData]="data()" [nzLoading]="loading()" [nzPageSize]="pageSize()">
+    <thead>
+      <tr>
+        @for (col of columns(); track col.key) {
+          <th [nzWidth]="col.width ?? null">{{ col.header }}</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of tabla.data; track row.id) {
+        <tr class="cursor-pointer hover:bg-brand-50" (click)="rowClick.emit(row)">
+          @for (col of columns(); track col.key) {
+            <td>{{ row[col.key] }}</td>
+          }
+        </tr>
+      }
+    </tbody>
+  </nz-table>
+}

@@ -1,0 +1,49 @@
+<section class="page">
+  <h1 class="page__title">Solicitudes</h1>
+
+  <form class="page__form" [formGroup]="form" (ngSubmit)="enviar()">
+    <mimi-select>
+      <nz-select
+        mimi-select
+        inputEffectDirective
+        mimiType="outline"
+        formControlName="tipo"
+        nzPlaceHolder="Tipo de solicitud"
+        [nzOptionHeightPx]="42"
+        [nzOptionOverflowSize]="10"
+        [ngClass]="{
+          'input-error': form.controls.tipo.invalid && form.controls.tipo.dirty,
+          fill: form.controls.tipo.value
+        }"
+      >
+        <nz-option *ngFor="let tipo of tipos" [nzValue]="tipo.id" [nzLabel]="tipo.nombre"></nz-option>
+      </nz-select>
+    </mimi-select>
+
+    <mimi-input>
+      <input
+        nz-input
+        mimi-input
+        inputEffectDirective
+        mimiType="outline"
+        formControlName="descripcion"
+        placeholder="Describe la solicitud"
+        [ngClass]="{
+          'input-error': form.controls.descripcion.invalid && form.controls.descripcion.dirty,
+          fill: form.controls.descripcion.value
+        }"
+      />
+    </mimi-input>
+
+    <button nz-button nzType="primary" type="submit" [disabled]="form.invalid">Enviar</button>
+  </form>
+
+  <p *ngIf="cargando" class="page__loading">Cargando…</p>
+
+  <ul *ngIf="!cargando" class="page__list">
+    <li *ngFor="let solicitud of solicitudes" class="page__item">
+      <span>{{ solicitud.descripcion }}</span>
+      <app-status-badge [estado]="solicitud.estado"></app-status-badge>
+    </li>
+  </ul>
+</section>

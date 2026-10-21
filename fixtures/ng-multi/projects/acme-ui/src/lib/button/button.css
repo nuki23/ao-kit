@@ -1,0 +1,31 @@
+.ui-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.ui-button--primary {
+  background: #2563eb;
+  color: #fff;
+}
+
+.ui-button--secondary {
+  background: #fff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.ui-button--danger {
+  background: #dc2626;
+  color: #fff;
+}
+
+.ui-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

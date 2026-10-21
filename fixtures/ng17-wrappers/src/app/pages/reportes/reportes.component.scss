@@ -1,0 +1,24 @@
+@use 'styles/variables' as *;
+
+.page {
+  padding: $space-6;
+}
+
+.page__title {
+  color: $color-primary;
+}
+
+.reportes__periodo {
+  width: 240px;
+  margin-bottom: $space-4;
+}
+
+.reportes__tabla {
+  width: 100%;
+  border-collapse: collapse;
+
+  td {
+    padding: $space-2 $space-3;
+    border-bottom: 1px solid $color-border;
+  }
+}

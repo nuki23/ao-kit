@@ -1,0 +1,22 @@
+@use 'styles/variables' as *;
+
+:host {
+  display: block;
+  margin-bottom: $space-4;
+}
+
+:host ::ng-deep .mat-form-field {
+  width: 100%;
+}
+
+:host ::ng-deep .mat-form-field-wrapper {
+  padding-bottom: 0;
+}
+
+:host ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+  color: $color-border;
+}
+
+:host ::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+  color: $color-primary;
+}

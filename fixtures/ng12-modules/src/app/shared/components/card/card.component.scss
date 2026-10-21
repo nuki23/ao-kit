@@ -1,0 +1,18 @@
+@use 'styles/variables' as *;
+
+:host {
+  display: block;
+  margin-bottom: $space-6;
+}
+
+.card__cerrar {
+  margin-left: auto;
+}
+
+:host ::ng-deep .mat-card-header-text {
+  margin: 0;
+}
+
+:host ::ng-deep .mat-card-actions {
+  padding: 0 $space-2 $space-2;
+}

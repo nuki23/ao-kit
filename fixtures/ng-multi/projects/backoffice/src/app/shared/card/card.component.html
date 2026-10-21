@@ -1,0 +1,11 @@
+<section class="bo-card" [class.bo-card--elevada]="elevada">
+  <header *ngIf="titulo" class="bo-card__cabecera">
+    <h3>{{ titulo }}</h3>
+  </header>
+  <div class="bo-card__cuerpo">
+    <ng-content></ng-content>
+  </div>
+  <footer class="bo-card__pie">
+    <ng-content select="[boCardPie]"></ng-content>
+  </footer>
+</section>

@@ -1,0 +1,11 @@
+<div class="bo-button-group" role="group">
+  <button
+    *ngFor="let opcion of opciones"
+    type="button"
+    class="bo-button-group__opcion"
+    [class.bo-button-group__opcion--activa]="opcion.id === seleccion"
+    (click)="elegir(opcion.id)"
+  >
+    {{ opcion.etiqueta }}
+  </button>
+</div>

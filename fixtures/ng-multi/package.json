@@ -1,0 +1,31 @@
+{
+  "name": "ng-multi",
+  "version": "0.0.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "ng": "ng",
+    "start:portal": "ng serve portal",
+    "start:backoffice": "ng serve backoffice",
+    "build:ui": "ng build acme-ui",
+    "build": "ng build acme-ui && ng build portal && ng build backoffice"
+  },
+  "dependencies": {
+    "@angular/common": "^20.3.0",
+    "@angular/compiler": "^20.3.0",
+    "@angular/core": "^20.3.0",
+    "@angular/forms": "^20.3.0",
+    "@angular/platform-browser": "^20.3.0",
+    "@angular/router": "^20.3.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.8.0",
+    "zone.js": "~0.15.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^20.3.0",
+    "@angular/cli": "^20.3.0",
+    "@angular/compiler-cli": "^20.3.0",
+    "ng-packagr": "^20.3.0",
+    "typescript": "~5.8.0"
+  }
+}

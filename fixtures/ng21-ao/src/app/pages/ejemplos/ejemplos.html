@@ -1,0 +1,20 @@
+<app-page-header title="Ejemplos" subtitle="Catálogo vivo de componentes compartidos." />
+
+<section class="mb-10 space-y-4">
+  <h2 class="text-lg font-semibold">page-header</h2>
+  <app-page-header title="Solo título" />
+  <app-page-header title="Con volver y acción" backLink="/ejemplos" actionLabel="Acción" (action)="sumar()" />
+  <p class="text-sm text-gray-500">Acción pulsada {{ clics() }} veces.</p>
+</section>
+
+<section class="mb-10 space-y-4">
+  <h2 class="text-lg font-semibold">custom-table</h2>
+  <app-custom-table [columns]="columns" [data]="filas" [pageSize]="5" />
+  <app-custom-table [columns]="columns" [data]="[]" emptyText="Tabla vacía de ejemplo." />
+</section>
+
+<section class="space-y-4">
+  <h2 class="text-lg font-semibold">empty-state</h2>
+  <app-empty-state title="Sin datos" description="Descripción opcional." />
+  <app-empty-state title="Con acción" actionLabel="Crear" (action)="sumar()" />
+</section>

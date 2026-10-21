@@ -1,0 +1,11 @@
+@use 'styles/variables' as *;
+
+.datos {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: $space-2;
+}
+
+.cargando {
+  color: $color-muted;
+}

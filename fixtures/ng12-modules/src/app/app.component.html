@@ -1,0 +1,8 @@
+<mat-toolbar color="primary">
+  <span class="titulo">{{ titulo }}</span>
+  <a mat-button routerLink="/clientes" routerLinkActive="activo">Clientes</a>
+  <a mat-button routerLink="/pedidos" routerLinkActive="activo">Pedidos</a>
+</mat-toolbar>
+<main class="contenido">
+  <router-outlet></router-outlet>
+</main>

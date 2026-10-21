@@ -1,0 +1,13 @@
+@use 'styles/variables' as *;
+
+.titulo {
+  margin-right: $space-6;
+}
+
+.activo {
+  text-decoration: underline;
+}
+
+.contenido {
+  padding: $space-6;
+}

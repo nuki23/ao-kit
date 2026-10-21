@@ -1,0 +1,29 @@
+{
+  "name": "ao-kit",
+  "version": "0.0.0",
+  "description": "Contexto de proyecto para agentes de código.",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "bin": {
+    "ao": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@ao-kit/adapters": "workspace:*",
+    "@ao-kit/core": "workspace:*",
+    "@ao-kit/scanner-angular": "workspace:*"
+  },
+  "dependencies": {
+    "commander": "^15.0.0"
+  }
+}

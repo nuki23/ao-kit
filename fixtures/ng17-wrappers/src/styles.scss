@@ -1,0 +1,9 @@
+@use 'styles/variables' as *;
+
+html,
+body {
+  margin: 0;
+  font-family: $font-family-base;
+  color: $color-text;
+  background: $color-background;
+}

@@ -1,0 +1,31 @@
+<app-page-header
+  title="Proveedores"
+  subtitle="Administra los proveedores registrados."
+  actionLabel="Nuevo proveedor"
+  (action)="crear()"
+/>
+
+<div class="mb-4 max-w-sm">
+  <input
+    nz-input
+    placeholder="Buscar por nombre"
+    [value]="filtro()"
+    (input)="filtro.set($any($event.target).value)"
+  />
+</div>
+
+@if (proveedores.error()) {
+  <app-empty-state
+    title="No se pudo cargar la lista"
+    description="Revisa tu conexión e intenta de nuevo."
+    actionLabel="Reintentar"
+    (action)="proveedores.reload()"
+  />
+} @else {
+  <app-custom-table
+    [columns]="columns"
+    [data]="filtrados()"
+    [loading]="proveedores.isLoading()"
+    (rowClick)="ver($event)"
+  />
+}

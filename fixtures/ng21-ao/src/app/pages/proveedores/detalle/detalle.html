@@ -1,0 +1,30 @@
+@if (proveedor.value(); as p) {
+  <app-page-header [title]="p.nombre" [subtitle]="p.documento" backLink="/proveedores">
+    <a nz-button [routerLink]="['/proveedores', p.id, 'editar']">Editar</a>
+    <button
+      nz-button
+      nzDanger
+      nz-popconfirm
+      nzPopconfirmTitle="¿Eliminar este proveedor?"
+      (nzOnConfirm)="eliminar()"
+    >
+      Eliminar
+    </button>
+  </app-page-header>
+
+  <nz-descriptions nzBordered [nzColumn]="1" class="rounded-card bg-white">
+    <nz-descriptions-item nzTitle="Ciudad">{{ p.ciudad }}</nz-descriptions-item>
+    <nz-descriptions-item nzTitle="Correo">{{ p.correo }}</nz-descriptions-item>
+    <nz-descriptions-item nzTitle="Estado">
+      @if (p.activo) {
+        <nz-tag nzColor="success">Activo</nz-tag>
+      } @else {
+        <nz-tag>Inactivo</nz-tag>
+      }
+    </nz-descriptions-item>
+  </nz-descriptions>
+} @else if (proveedor.isLoading()) {
+  <p class="text-gray-500">Cargando…</p>
+} @else {
+  <app-empty-state title="Proveedor no encontrado" description="Puede que haya sido eliminado." />
+}

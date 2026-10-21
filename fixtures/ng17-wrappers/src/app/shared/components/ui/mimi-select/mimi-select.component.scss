@@ -1,0 +1,45 @@
+@use 'styles/variables' as *;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+[mimi-group] {
+  position: relative;
+  margin-bottom: $space-4;
+}
+
+:host ::ng-deep .ant-select[mimi-select] {
+  width: 100%;
+
+  .ant-select-selector {
+    min-height: $control-height;
+    padding: 0 $space-3;
+    align-items: center;
+    border-radius: $radius-md;
+  }
+
+  &.mimi-outline .ant-select-selector {
+    border: 1px solid $color-border;
+    background: transparent;
+  }
+
+  &.mimi-fill .ant-select-selector {
+    border: none;
+    background: $color-fill;
+  }
+
+  &.is-focused .ant-select-selector {
+    border-color: $color-primary;
+    box-shadow: none;
+  }
+
+  &.fill .ant-select-selector {
+    background: $color-fill;
+  }
+
+  &.input-error .ant-select-selector {
+    border-color: $color-danger;
+  }
+}
