@@ -110,7 +110,13 @@ describe.each(FIXTURES)('expected.json de %s', (fixture) => {
         // La evidencia de los oráculos es parcial (sin línea): aquí solo se comprueban los conteos.
         const evidence = Object.fromEntries(Object.keys(counts).map((k) => [k, []]));
         const extra = key === 'standalone' ? { explicitFlag: value['explicitFlag'] ?? 0 } : {};
-        const result = shape[key]!.safeParse({ ...value, evidence, ...extra });
+        // Si el oráculo no dice lowSample, espera false.
+        const result = shape[key]!.safeParse({
+          lowSample: false,
+          ...value,
+          evidence,
+          ...extra,
+        });
         if (!result.success)
           issues.push(`${project}.${key}: ${result.error.issues.map((i) => i.message).join('; ')}`);
       }

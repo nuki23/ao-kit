@@ -239,10 +239,11 @@
           "divided": false
         },
         "providedIn": {
-          "$comment": "ClientesService y AuthGuard en root, PedidosService en providers de PedidosModule; ApiService es abstracta y sin decorador. 1 de 3 = 33 %: dividida",
+          "$comment": "ClientesService y AuthGuard en root, PedidosService en providers de PedidosModule; ApiService es abstracta y sin decorador. 1 de 3 = 33 %, pero total < 5 y minoría < 2: muestra chica, no dividida",
           "counts": { "root": 2, "module": 1, "component": 0 },
           "majority": "root",
-          "divided": true
+          "divided": false,
+          "lowSample": true
         },
         "fileNaming": { "pattern": "kebab-case.component.ts / .module.ts / .service.ts / .pipe.ts / .directive.ts" },
         "featureLayout": { "pattern": "features/<feature>/{<feature>.module.ts, <feature>-routing.module.ts, componentes}" },

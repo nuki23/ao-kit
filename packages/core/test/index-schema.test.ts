@@ -126,6 +126,47 @@ describe('esquema de index.json', () => {
       expect(issues(index)).not.toEqual([]);
     });
 
+    describe('muestra mínima: total ≥ 5 y minoría ≥ 2 (6.4)', () => {
+      const di = (
+        constructorParam: number,
+        inject: number,
+        divided: boolean,
+        lowSample: boolean,
+      ) => {
+        const index = clone();
+        Object.assign(index['conventions'].mimi.di, {
+          counts: { constructorParam, inject },
+          majority:
+            constructorParam === inject
+              ? null
+              : constructorParam > inject
+                ? 'constructorParam'
+                : 'inject',
+          divided,
+          lowSample,
+        });
+        return index;
+      };
+      const expectFlags = (c: number, i: number, divided: boolean, lowSample: boolean) => {
+        expect(issues(di(c, i, divided, lowSample))).toEqual([]);
+        expect(issues(di(c, i, !divided, lowSample))).not.toEqual([]);
+        expect(issues(di(c, i, divided, !lowSample))).not.toEqual([]);
+      };
+
+      it('2/1 (33 % pero total 3): lowSample, no dividida', () => expectFlags(2, 1, false, true));
+      it('4/2 (total 6, minoría 2): dividida', () => expectFlags(4, 2, true, false));
+      it('4/1 (20 %): ni dividida ni lowSample', () => expectFlags(4, 1, false, false));
+      it('1/1 (empate, total 2): lowSample y sin mayoría', () => expectFlags(1, 1, false, true));
+      it('8/2 (total 10, minoría 2 = 20 %): ni dividida ni lowSample', () =>
+        expectFlags(8, 2, false, false));
+      it('11/0 (unánime): ni dividida ni lowSample', () => expectFlags(11, 0, false, false));
+
+      it('lowSample y divided nunca son true a la vez', () => {
+        expect(issues(di(4, 2, true, true))).not.toEqual([]);
+        expect(issues(di(2, 1, true, true))).not.toEqual([]);
+      });
+    });
+
     it('con conteos en cero no hay mayoría', () => {
       const index = clone();
       index['conventions'].mimi.outputs.majority = 'signal';

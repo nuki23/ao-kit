@@ -26,7 +26,10 @@ Generado el <fecha> sobre <rama> · ao-kit <versión> · conteos excluyen: <show
 **Observado**
 - Constructor en <n> archivos, `inject()` en <m>: `src/app/pages/pagos/pagos.component.ts:18`, …
 
-<!-- ao: convención dividida (minoría ≥ 30 %) sin decisión del equipo: -->
+<!-- ao: convención con lowSample (minoría ≥ 30 % pero total < 5 o minoría < 2): sin pregunta, solo la nota. -->
+- Muestra chica: <a> en <n> archivos, <b> en <m>. No alcanza para hablar de convención; sigue la mayoría.
+
+<!-- ao: convención dividida (divided: minoría ≥ 30 %, total ≥ 5 y minoría ≥ 2) sin decisión del equipo: -->
 > **Pendiente de confirmar.** <a> en <n> archivos (<ejemplos>) · <b> en <m> archivos (<ejemplos>). Hasta que el equipo decida, sigue lo del archivo que estás tocando.
 
 <!-- ao: override de .ao/config.json: -->

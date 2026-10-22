@@ -6,10 +6,12 @@ const split = <C extends Record<string, number>>(
   counts: C,
   majority: (keyof C & string) | null,
   divided = false,
+  lowSample = false,
 ) => ({
   counts,
   majority,
   divided,
+  lowSample,
   evidence: Object.fromEntries(Object.keys(counts).map((k) => [k, []])) as unknown as Record<
     keyof C,
     []

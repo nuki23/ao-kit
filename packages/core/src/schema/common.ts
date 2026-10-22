@@ -51,9 +51,15 @@ export const Count = z.int().min(0);
 /** Minoría ≥ 30 % del total: la convención está dividida y /ao:init pregunta (6.4). */
 export const DIVIDED_MINORITY = 0.3;
 
+/** Muestra mínima para marcar una convención dividida: total y casos de la minoría. */
+export const DIVIDED_MIN_TOTAL = 5;
+export const DIVIDED_MIN_MINORITY = 2;
+
 /**
  * Convención con dos o más formas: conteos por forma, la mayoría (null si empatan o no hay datos),
  * si está dividida y la evidencia de cada forma.
+ * divided: la minoría (total − mayor conteo) es ≥ 30 % o hay empate, con total ≥ 5 y minoría ≥ 2.
+ * lowSample: se cumpliría lo del 30 % pero falta muestra; /ao:init no pregunta (6.4).
  */
 export function split<
   const K extends readonly [string, ...string[]],
@@ -70,12 +76,20 @@ export function split<
     >,
   );
   return z
-    .strictObject({ counts, majority: key.nullable(), divided: z.boolean(), evidence, ...extra })
+    .strictObject({
+      counts,
+      majority: key.nullable(),
+      divided: z.boolean(),
+      lowSample: z.boolean(),
+      evidence,
+      ...extra,
+    })
     .superRefine((value, ctx) => {
       const s = value as unknown as {
         counts: Record<string, number>;
         majority: string | null;
         divided: boolean;
+        lowSample: boolean;
       };
       const values = Object.values(s.counts);
       const total = values.reduce((a, b) => a + b, 0);
@@ -90,12 +104,22 @@ export function split<
         });
       }
       const minority = total - max;
-      const divided = total > 0 && (leaders.length > 1 || minority / total >= DIVIDED_MINORITY);
+      const wouldDivide = total > 0 && (leaders.length > 1 || minority / total >= DIVIDED_MINORITY);
+      const enoughSample = total >= DIVIDED_MIN_TOTAL && minority >= DIVIDED_MIN_MINORITY;
+      const divided = wouldDivide && enoughSample;
+      const lowSample = wouldDivide && !enoughSample;
       if (s.divided !== divided) {
         ctx.addIssue({
           code: 'custom',
           path: ['divided'],
           message: `divided debe ser ${String(divided)} con esos conteos`,
+        });
+      }
+      if (s.lowSample !== lowSample) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['lowSample'],
+          message: `lowSample debe ser ${String(lowSample)} con esos conteos`,
         });
       }
     });
