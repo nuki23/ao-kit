@@ -24,6 +24,7 @@
     "@ao-kit/scanner-angular": "workspace:*"
   },
   "dependencies": {
-    "commander": "^15.0.0"
+    "commander": "^15.0.0",
+    "zod": "^4.6.7"
   }
 }
