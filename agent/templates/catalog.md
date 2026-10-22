@@ -49,7 +49,7 @@ Antes de crear un componente, busca aquí la intención. Si no está, mira "No h
 
 ## Legacy
 
-<!-- ao: componentes kind "unused" o en deprecated. Siempre tachados y con el reemplazo si existe. -->
+<!-- ao: componentes kind "unused" o en deprecated. Siempre tachados y con el reemplazo si existe. Los "exported-not-consumed" no son legacy: van en su grupo con 0 usos. -->
 
 | Componente | Archivo | Usos | En su lugar |
 |---|---|---|---|

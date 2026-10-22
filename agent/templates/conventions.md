@@ -54,7 +54,7 @@ Generado el <fecha> sobre <rama> · ao-kit <versión> · conteos excluyen: <show
 
 ## Heredado sin uso
 
-<!-- ao: index con kind "unused" (componentes, directivas, pipes, servicios, interceptores no registrados) y lo de deprecated. Nunca se usa como referencia. -->
+<!-- ao: index con kind "unused" (componentes, directivas, pipes, servicios, interceptores no registrados) y lo de deprecated. Nunca se usa como referencia. Excepción: unusedReason "exported-not-consumed" (export de una librería sin consumidores en el workspace) no es código muerto y no va aquí. -->
 No lo tomes como referencia ni lo reutilices sin revisarlo:
 
 | Qué | Archivo | Por qué |

@@ -1,163 +1,392 @@
 {
-  "$comment": "Oráculo de lo que ao scan debe detectar en este fixture. Formato informal hasta congelar el esquema de index.json (3.1); los detectores de M4 lo usan como referencia. Rutas relativas al fixture, en POSIX. Los usos cuentan elementos en templates.",
-  "stack": {
-    "angularVersion": "17",
-    "builder": "@angular-devkit/build-angular:application",
-    "bootstrap": "bootstrapApplication",
-    "projectStructure": "standalone",
-    "uiLibraries": [{ "name": "ng-zorro-antd", "prefixes": ["nz-"] }],
-    "styles": "scss",
-    "aliases": {
-      "@core/*": "src/app/core/*",
-      "@shared/*": "src/app/shared/*",
-      "@env/*": "src/environments/*"
-    }
-  },
-  "wrappers": [
-    {
-      "selector": "mimi-select",
-      "source": "src/app/shared/components/ui/mimi-select/",
-      "wraps": "nz-select",
-      "evidence": {
-        "template": "solo <div mimi-group><ng-content></ng-content></div>",
-        "styles": ":host ::ng-deep .ant-select[mimi-select]",
-        "projectedIn": 3
-      },
-      "markerAttribute": "mimi-select",
-      "companionDirectives": ["inputEffectDirective", "mimiType"]
-    },
-    {
-      "selector": "mimi-input",
-      "source": "src/app/shared/components/ui/mimi-input/",
-      "wraps": "nz-input",
-      "evidence": {
-        "template": "solo <div mimi-group><ng-content></ng-content></div>",
-        "styles": ":host ::ng-deep .ant-input[mimi-input]",
-        "projectedIn": 5
-      },
-      "markerAttribute": "mimi-input",
-      "companionDirectives": ["inputEffectDirective", "mimiType"]
-    }
-  ],
-  "usages": {
-    "mimi-select": {
-      "count": 3,
-      "files": [
-        "src/app/pages/pagos/pagos.component.html",
-        "src/app/pages/perfil/perfil.component.html",
-        "src/app/pages/solicitudes/solicitudes.component.html"
+  "$comment": "Oráculo de lo que ao scan debe detectar en este fixture. index es un índice parcial con el formato real de .ao/index.json (esquema 3.1, packages/core); los campos que faltan aún no los produce ningún detector y solo se validan por forma. negatives lista lo que no debe detectarse. Rutas relativas al fixture, en POSIX. Los usos cuentan elementos en templates.",
+  "schemaVersion": 1,
+  "index": {
+    "stack": {
+      "framework": "angular",
+      "angularVersion": "17.3.12",
+      "angularMajor": 17,
+      "workspace": "angular-cli",
+      "zoneless": false,
+      "projectStructure": "standalone",
+      "uiLibraries": [{ "name": "ng-zorro-antd", "version": "17.4.1", "prefixes": ["nz-"], "source": "table" }],
+      "icons": [{ "library": "@ant-design/icons-angular", "version": "17.0.0" }],
+      "state": [{ "library": "@ngrx/signals", "version": "17.2.0" }],
+      "styles": { "preprocessors": ["scss"], "tailwind": null, "themes": ["src/styles/_variables.scss"] },
+      "aliases": [
+        { "alias": "@core/*", "paths": ["src/app/core/*"], "resolvesTo": "src/app/core/", "via": null },
+        { "alias": "@env/*", "paths": ["src/environments/*"], "resolvesTo": "src/environments/", "via": null },
+        { "alias": "@shared/*", "paths": ["src/app/shared/*"], "resolvesTo": "src/app/shared/", "via": null }
       ]
     },
-    "mimi-input": {
-      "count": 5,
-      "files": [
-        "src/app/pages/pagos/pagos.component.html",
-        "src/app/pages/perfil/perfil.component.html",
-        "src/app/pages/solicitudes/solicitudes.component.html"
-      ]
-    },
-    "app-status-badge": {
-      "count": 2,
-      "files": [
-        "src/app/pages/pagos/pagos.component.html",
-        "src/app/pages/solicitudes/solicitudes.component.html"
-      ]
-    },
-    "nz-select": {
-      "count": 4,
-      "wrapped": 3,
-      "wrappedBy": "mimi-select",
-      "unwrapped": ["src/app/pages/reportes/reportes.component.html"]
-    },
-    "nz-input": {
-      "count": 5,
-      "wrapped": 5,
-      "wrappedBy": "mimi-input",
-      "unwrapped": []
-    }
-  },
-  "conventions": {
-    "standalone": { "standalone": 10, "total": 10, "explicitFlag": 10, "percent": 100 },
-    "di": {
-      "constructor": 11,
-      "inject": 4,
-      "majority": "constructor",
-      "injectFiles": [
-        "src/app/core/guards/auth.guard.ts",
-        "src/app/core/interceptors/errores.interceptor.ts",
-        "src/app/pages/solicitudes/solicitudes.component.ts",
-        "src/app/pages/solicitudes/solicitudes.store.ts"
-      ],
-      "$comment": "inject() solo donde no hay constructor (guard e interceptor funcionales, withMethods) o donde el tipo no se puede usar en el constructor (signalStore)"
-    },
-    "inputs": { "decorator": 3, "signal": 0, "majority": "decorator" },
-    "outputs": { "decorator": 0, "signal": 0 },
-    "controlFlow": { "structuralDirectives": 14, "blocks": 0, "majority": "structuralDirectives" },
-    "changeDetection": { "onPush": 0, "default": 8 },
-    "fileNaming": "kebab-case.component.ts / .directive.ts / .service.ts",
-    "wrapperUsage": {
-      "rule": "nz-select siempre dentro de mimi-select",
-      "followed": 3,
-      "total": 4,
-      "exceptions": ["src/app/pages/reportes/reportes.component.html"]
-    }
-  },
-  "patterns": {
-    "notificaciones": {
-      "approach": "facade",
-      "facade": { "name": "NotificacionesService", "source": "src/app/core/services/notificaciones.service.ts", "wraps": "NzMessageService" },
-      "evidence": [
-        { "uses": "NotificacionesService", "files": 4, "where": ["src/app/core/interceptors/errores.interceptor.ts", "src/app/pages/pagos/pagos.component.ts", "src/app/pages/perfil/perfil.component.ts", "src/app/pages/solicitudes/solicitudes.component.ts"] },
-        { "uses": "NzMessageService directo (fuera de la fachada)", "files": 0 }
-      ],
-      "errorInterceptor": {
-        "source": "src/app/core/interceptors/errores.interceptor.ts",
-        "kind": "HttpInterceptorFn",
-        "registeredWith": "provideHttpClient(withInterceptors([erroresInterceptor]))",
-        "suppress": { "token": "SIN_AVISO_DE_ERROR", "source": "src/app/core/http/contexto.ts", "usedIn": ["src/app/core/services/reportes.service.ts"] }
+    "projects": [
+      {
+        "name": "ng17-wrappers",
+        "type": "application",
+        "root": "",
+        "sourceRoot": "src",
+        "prefix": "app",
+        "builder": "@angular-devkit/build-angular:application",
+        "bootstrap": "bootstrapApplication",
+        "projectStructure": "standalone",
+        "packageName": null,
+        "entryFile": null,
+        "consumes": []
+      }
+    ],
+    "components": [
+      {
+        "id": "src/app/shared/components/ui/mimi-select/mimi-select.component.ts#MimiSelectComponent",
+        "selector": "mimi-select",
+        "project": "ng17-wrappers",
+        "files": {
+          "ts": "src/app/shared/components/ui/mimi-select/mimi-select.component.ts",
+          "template": "src/app/shared/components/ui/mimi-select/mimi-select.component.html",
+          "styles": ["src/app/shared/components/ui/mimi-select/mimi-select.component.scss"]
+        },
+        "standalone": { "effective": true, "explicit": true },
+        "inputs": [],
+        "outputs": [],
+        "slots": ["default"],
+        "kind": "wrapper",
+        "wraps": "nz-select",
+        "criteria": {
+          "a": { "met": true, "element": "nz-select", "ratio": { "value": 3, "total": 3 } },
+          "b": {
+            "met": true,
+            "selectors": [":host ::ng-deep .ant-select[mimi-select]"],
+            "evidence": [{ "file": "src/app/shared/components/ui/mimi-select/mimi-select.component.scss", "line": 13 }]
+          },
+          "c": { "met": true, "attribute": "mimi-select", "ratio": { "value": 3, "total": 3 } }
+        },
+        "contract": [
+          { "piece": "mimi-select", "on": "projected", "type": "attribute", "required": true, "present": 3, "total": 3, "missing": [], "inert": false },
+          { "piece": "inputEffectDirective", "on": "projected", "type": "directive", "required": true, "present": 3, "total": 3, "missing": [], "inert": false },
+          { "piece": "mimiType", "on": "projected", "type": "directive", "value": "outline", "required": true, "present": 3, "total": 3, "missing": [], "inert": false },
+          { "piece": "formControlName", "on": "projected", "type": "directive", "required": true, "present": 3, "total": 3, "missing": [], "inert": false },
+          { "piece": "nzPlaceHolder", "on": "projected", "type": "attribute", "required": true, "present": 3, "total": 3, "missing": [], "inert": false },
+          { "piece": "[nzOptionHeightPx]", "on": "projected", "type": "input-binding", "value": "42", "required": true, "present": 3, "total": 3, "missing": [], "inert": false },
+          { "piece": "[nzOptionOverflowSize]", "on": "projected", "type": "input-binding", "value": "10", "required": true, "present": 3, "total": 3, "missing": [], "inert": false },
+          { "piece": "[ngClass]", "on": "projected", "type": "input-binding", "required": true, "present": 3, "total": 3, "missing": [], "inert": false },
+          {
+            "piece": "nzShowSearch",
+            "on": "projected",
+            "type": "attribute",
+            "required": false,
+            "present": 2,
+            "total": 3,
+            "missing": [{ "file": "src/app/pages/solicitudes/solicitudes.component.html", "line": 7 }],
+            "inert": false
+          }
+        ]
       },
-      "exceptions": []
+      {
+        "id": "src/app/shared/components/ui/mimi-input/mimi-input.component.ts#MimiInputComponent",
+        "selector": "mimi-input",
+        "project": "ng17-wrappers",
+        "slots": ["default"],
+        "kind": "wrapper",
+        "wraps": "nz-input",
+        "criteria": {
+          "a": { "met": true, "element": "nz-input", "ratio": { "value": 5, "total": 5 } },
+          "b": {
+            "met": true,
+            "selectors": [":host ::ng-deep .ant-input[mimi-input]"],
+            "evidence": [{ "file": "src/app/shared/components/ui/mimi-input/mimi-input.component.scss" }]
+          },
+          "c": { "met": true, "attribute": "mimi-input", "ratio": { "value": 5, "total": 5 } }
+        }
+      },
+      {
+        "id": "src/app/shared/components/status-badge/status-badge.component.ts#StatusBadgeComponent",
+        "selector": "app-status-badge",
+        "project": "ng17-wrappers",
+        "kind": "component",
+        "wraps": null
+      }
+    ],
+    "directives": [
+      {
+        "id": "src/app/shared/directives/input-effect.directive.ts#InputEffectDirective",
+        "selector": "[inputEffectDirective]",
+        "used": true
+      },
+      { "id": "src/app/shared/directives/mimi-type.directive.ts#MimiTypeDirective", "selector": "[mimiType]", "used": true }
+    ],
+    "usages": [
+      {
+        "selector": "app-status-badge",
+        "library": null,
+        "total": 2,
+        "byProject": { "ng17-wrappers": 2 },
+        "byFile": [
+          { "file": "src/app/pages/pagos/pagos.component.html", "count": 1, "evidence": [{ "file": "src/app/pages/pagos/pagos.component.html", "line": 66 }] },
+          { "file": "src/app/pages/solicitudes/solicitudes.component.html", "count": 1, "evidence": [{ "file": "src/app/pages/solicitudes/solicitudes.component.html", "line": 50 }] }
+        ],
+        "showcase": 0
+      },
+      {
+        "selector": "mimi-input",
+        "library": null,
+        "total": 5,
+        "byProject": { "ng17-wrappers": 5 },
+        "byFile": [
+          { "file": "src/app/pages/pagos/pagos.component.html", "count": 2 },
+          { "file": "src/app/pages/perfil/perfil.component.html", "count": 2 },
+          { "file": "src/app/pages/solicitudes/solicitudes.component.html", "count": 1 }
+        ],
+        "showcase": 0
+      },
+      {
+        "selector": "mimi-select",
+        "library": null,
+        "total": 3,
+        "byProject": { "ng17-wrappers": 3 },
+        "byFile": [
+          { "file": "src/app/pages/pagos/pagos.component.html", "count": 1, "evidence": [{ "file": "src/app/pages/pagos/pagos.component.html", "line": 5 }] },
+          { "file": "src/app/pages/perfil/perfil.component.html", "count": 1, "evidence": [{ "file": "src/app/pages/perfil/perfil.component.html", "line": 36 }] },
+          { "file": "src/app/pages/solicitudes/solicitudes.component.html", "count": 1, "evidence": [{ "file": "src/app/pages/solicitudes/solicitudes.component.html", "line": 6 }] }
+        ],
+        "showcase": 0
+      },
+      {
+        "selector": "nz-input",
+        "library": "ng-zorro-antd",
+        "total": 5,
+        "byFile": [
+          { "file": "src/app/pages/pagos/pagos.component.html", "count": 2 },
+          { "file": "src/app/pages/perfil/perfil.component.html", "count": 2 },
+          { "file": "src/app/pages/solicitudes/solicitudes.component.html", "count": 1 }
+        ],
+        "wrappedBy": { "selector": "mimi-input", "count": 5 },
+        "unwrapped": []
+      },
+      {
+        "selector": "nz-select",
+        "library": "ng-zorro-antd",
+        "total": 4,
+        "byFile": [
+          { "file": "src/app/pages/pagos/pagos.component.html", "count": 1 },
+          { "file": "src/app/pages/perfil/perfil.component.html", "count": 1 },
+          { "file": "src/app/pages/reportes/reportes.component.html", "count": 1 },
+          { "file": "src/app/pages/solicitudes/solicitudes.component.html", "count": 1 }
+        ],
+        "wrappedBy": { "selector": "mimi-select", "count": 3 },
+        "unwrapped": [{ "file": "src/app/pages/reportes/reportes.component.html", "line": 4 }]
+      }
+    ],
+    "conventions": {
+      "ng17-wrappers": {
+        "standalone": {
+          "$comment": "8 componentes + 2 directivas, todos con standalone: true explícito",
+          "counts": { "standalone": 10, "ngmodule": 0 },
+          "majority": "standalone",
+          "divided": false,
+          "explicitFlag": 10
+        },
+        "di": {
+          "$comment": "inject() solo donde no hay constructor (guard e interceptor funcionales, withMethods) o donde el tipo no se puede usar en el constructor (signalStore). 4 de 15 = 27 %: no está dividida",
+          "counts": { "constructorParam": 11, "inject": 4 },
+          "majority": "constructorParam",
+          "divided": false,
+          "evidence": {
+            "inject": [
+              { "file": "src/app/core/guards/auth.guard.ts" },
+              { "file": "src/app/core/interceptors/errores.interceptor.ts" },
+              { "file": "src/app/pages/solicitudes/solicitudes.component.ts" },
+              { "file": "src/app/pages/solicitudes/solicitudes.store.ts" }
+            ]
+          }
+        },
+        "inputs": { "counts": { "decorator": 3, "signal": 0 }, "majority": "decorator", "divided": false },
+        "outputs": { "counts": { "decorator": 0, "signal": 0 }, "majority": null, "divided": false },
+        "controlFlow": { "counts": { "structural": 14, "blocks": 0 }, "majority": "structural", "divided": false },
+        "changeDetection": { "counts": { "onPush": 0, "eager": 8 }, "majority": "eager", "divided": false },
+        "fileNaming": { "pattern": "kebab-case.component.ts / .directive.ts / .service.ts" },
+        "wrapperUsage": [
+          { "wrapper": "mimi-input", "wraps": "nz-input", "followed": 5, "total": 5, "exceptions": [] },
+          {
+            "wrapper": "mimi-select",
+            "wraps": "nz-select",
+            "followed": 3,
+            "total": 4,
+            "exceptions": [{ "file": "src/app/pages/reportes/reportes.component.html", "line": 4 }]
+          }
+        ]
+      }
     },
-    "iconos": {
-      "approach": "static-registry",
-      "library": "ng-zorro-antd (@ant-design/icons-angular)",
-      "registration": "importProvidersFrom(NzIconModule.forRoot(ICONOS)) en app.config.ts",
-      "syntax": "<span nz-icon nzType=\"…\" nzTheme=\"outline\"></span>",
-      "evidence": [{ "icons": 5, "uses": 7, "files": 4 }],
-      "exceptions": []
+    "patterns": {
+      "notificaciones": {
+        "approach": "facade",
+        "facade": { "id": "src/app/core/services/notificaciones.service.ts#NotificacionesService", "wraps": ["NzMessageService"] },
+        "evidence": [
+          {
+            "what": "NotificacionesService",
+            "files": 4,
+            "evidence": [
+              { "file": "src/app/core/interceptors/errores.interceptor.ts" },
+              { "file": "src/app/pages/pagos/pagos.component.ts" },
+              { "file": "src/app/pages/perfil/perfil.component.ts" },
+              { "file": "src/app/pages/solicitudes/solicitudes.component.ts" }
+            ]
+          },
+          { "what": "NzMessageService directo (fuera de la fachada)", "files": 0, "evidence": [] }
+        ],
+        "exceptions": [],
+        "details": {
+          "library": "ng-zorro-antd",
+          "errorInterceptor": {
+            "id": "src/app/core/interceptors/errores.interceptor.ts#erroresInterceptor",
+            "kind": "HttpInterceptorFn",
+            "registration": { "file": "src/app/app.config.ts", "line": 23, "snippet": "provideHttpClient(withInterceptors([erroresInterceptor]))," }
+          },
+          "suppress": {
+            "mechanism": "HttpContextToken",
+            "id": "src/app/core/http/contexto.ts#SIN_AVISO_DE_ERROR",
+            "usedIn": [{ "file": "src/app/core/services/reportes.service.ts" }]
+          }
+        }
+      },
+      "iconos": {
+        "approach": "static-registry",
+        "facade": null,
+        "exceptions": [],
+        "details": {
+          "library": "ng-zorro-antd",
+          "registration": { "file": "src/app/app.config.ts", "line": 26, "snippet": "importProvidersFrom(NzIconModule.forRoot(ICONOS))," },
+          "syntax": "<span nz-icon nzType=\"…\" nzTheme=\"outline\"></span>",
+          "icons": 5,
+          "uses": 7
+        }
+      },
+      "formularios": {
+        "approach": "reactive-typed",
+        "facade": null,
+        "exceptions": [
+          { "file": "src/app/pages/reportes/reportes.component.html", "line": 8, "detail": "ngModel (template-driven) en el filtro de periodo" }
+        ],
+        "details": {
+          "$comment": "this.fb.nonNullable.group con FormBuilder inyectado por constructor",
+          "builder": "FormBuilder",
+          "customValidators": [
+            {
+              "id": "src/app/shared/validators/no-solo-espacios.validator.ts#noSoloEspacios",
+              "uses": 2,
+              "evidence": [{ "file": "src/app/pages/perfil/perfil.component.ts" }, { "file": "src/app/pages/solicitudes/solicitudes.component.ts" }]
+            }
+          ],
+          "fieldLayout": ["mimi-input", "mimi-select"],
+          "catalogs": ["src/app/core/services/catalogos.service.ts#CatalogosService"]
+        }
+      },
+      "estado": {
+        "approach": "ngrx-signal-store",
+        "facade": null,
+        "evidence": [{ "what": "SolicitudesStore", "files": 1, "evidence": [{ "file": "src/app/pages/solicitudes/solicitudes.component.ts" }] }],
+        "exceptions": [
+          { "file": "src/app/pages/pagos/pagos.component.ts", "detail": "estado en propiedades del componente" },
+          { "file": "src/app/pages/perfil/perfil.component.ts", "detail": "estado en propiedades del componente" },
+          { "file": "src/app/pages/reportes/reportes.component.ts", "detail": "estado en propiedades del componente" }
+        ],
+        "details": {
+          "facts": [
+            {
+              "key": "store",
+              "value": "signalStore(withState, withComputed, withMethods) con patchState, en providers de SolicitudesComponent",
+              "evidence": [{ "file": "src/app/pages/solicitudes/solicitudes.store.ts" }]
+            }
+          ]
+        }
+      },
+      "api": {
+        "approach": "http-client-direct",
+        "facade": null,
+        "details": {
+          "urlOrigin": { "kind": "environment", "name": "environment.apiUrl", "evidence": [{ "file": "src/environments/environment.ts" }] },
+          "responseWrapper": null,
+          "interceptors": ["src/app/core/interceptors/errores.interceptor.ts#erroresInterceptor"],
+          "httpContext": ["src/app/core/http/contexto.ts#SIN_AVISO_DE_ERROR"],
+          "models": ["src/app/core/services/"]
+        }
+      }
     },
-    "formularios": {
-      "approach": "reactive-typed",
-      "builder": "this.fb.nonNullable.group (FormBuilder por constructor)",
-      "customValidators": [{ "name": "noSoloEspacios", "source": "src/app/shared/validators/no-solo-espacios.validator.ts", "kind": "soloEspacios", "uses": 2, "where": ["src/app/pages/perfil/perfil.component.ts", "src/app/pages/solicitudes/solicitudes.component.ts"] }],
-      "fieldLayout": "wrappers mimi-select / mimi-input",
-      "catalogs": "CatalogosService (tipos, bancos, ciudades)",
-      "exceptions": [{ "file": "src/app/pages/reportes/reportes.component.html", "detail": "ngModel (template-driven) en el filtro de periodo" }]
+    "routes": {
+      "ng17-wrappers": [
+        { "path": "", "redirectTo": "solicitudes", "showcase": false },
+        { "path": "solicitudes", "loadComponent": "src/app/pages/solicitudes/solicitudes.component.ts#SolicitudesComponent", "showcase": false },
+        { "path": "pagos", "loadComponent": "src/app/pages/pagos/pagos.component.ts#PagosComponent", "showcase": false },
+        {
+          "path": "perfil",
+          "loadComponent": "src/app/pages/perfil/perfil.component.ts#PerfilComponent",
+          "canActivate": ["src/app/core/guards/auth.guard.ts#authGuard"],
+          "showcase": false
+        },
+        { "path": "reportes", "loadComponent": "src/app/pages/reportes/reportes.component.ts#ReportesComponent", "showcase": false },
+        { "path": "**", "redirectTo": "solicitudes", "showcase": false }
+      ]
     },
-    "estado": {
-      "approach": "ngrx-signal-store",
-      "store": { "name": "SolicitudesStore", "source": "src/app/pages/solicitudes/solicitudes.store.ts", "providedIn": "providers del componente SolicitudesComponent" },
-      "evidence": [{ "detail": "signalStore(withState, withComputed, withMethods) con patchState" }],
-      "exceptions": [{ "detail": "pagos, perfil y reportes guardan su estado en propiedades del componente" }]
-    },
-    "api": {
-      "approach": "http-client-direct",
-      "urlOrigin": { "kind": "environment", "field": "environment.apiUrl" },
-      "models": "en el archivo del servicio (core/services/*.service.ts)",
-      "interceptors": ["erroresInterceptor"],
-      "httpContext": ["SIN_AVISO_DE_ERROR"]
-    }
+    "services": [
+      {
+        "id": "src/app/core/interceptors/errores.interceptor.ts#erroresInterceptor",
+        "decorator": "none",
+        "role": "interceptor",
+        "used": true,
+        "registered": true
+      },
+      {
+        "id": "src/app/core/services/notificaciones.service.ts#NotificacionesService",
+        "decorator": "@Injectable",
+        "providedIn": "root",
+        "role": "facade",
+        "used": true,
+        "registered": null
+      },
+      {
+        "id": "src/app/pages/solicitudes/solicitudes.store.ts#SolicitudesStore",
+        "providedIn": "component",
+        "role": "store",
+        "used": true
+      }
+    ],
+    "possibleIssues": [
+      {
+        "code": "duplicate-attribute",
+        "evidence": { "file": "src/app/pages/reportes/reportes.component.html", "line": 10, "snippet": "nzPlaceHolder=\"Selecciona un periodo\"" }
+      },
+      {
+        "code": "subscription-without-cleanup",
+        "evidence": { "file": "src/app/pages/perfil/perfil.component.ts", "line": 56, "snippet": "this.form.valueChanges.subscribe(() => (this.guardado = false));" }
+      },
+      {
+        "code": "global-dom-query",
+        "evidence": { "file": "src/app/shared/directives/input-effect.directive.ts", "line": 17, "snippet": "document.querySelectorAll('.is-focused')" }
+      }
+    ],
+    "inertAttributes": [],
+    "warnings": []
   },
-  "routes": [
-    { "path": "", "redirectTo": "solicitudes" },
-    { "path": "solicitudes", "loadComponent": "src/app/pages/solicitudes/solicitudes.component.ts#SolicitudesComponent" },
-    { "path": "pagos", "loadComponent": "src/app/pages/pagos/pagos.component.ts#PagosComponent" },
-    {
-      "path": "perfil",
-      "loadComponent": "src/app/pages/perfil/perfil.component.ts#PerfilComponent",
-      "canActivate": ["authGuard"]
-    },
-    { "path": "reportes", "loadComponent": "src/app/pages/reportes/reportes.component.ts#ReportesComponent" },
-    { "path": "**", "redirectTo": "solicitudes" }
-  ]
+  "negatives": {
+    "possibleIssues": [
+      {
+        "code": "duplicate-attribute",
+        "evidence": { "file": "src/app/pages/reportes/reportes.component.html", "line": 6 },
+        "reason": "class=\"…\" y [class.reportes__periodo--vacio] son atributos distintos aunque ambos tocan la clase"
+      },
+      {
+        "code": "subscription-without-cleanup",
+        "evidence": { "file": "src/app/pages/solicitudes/solicitudes.component.ts", "line": 56 },
+        "reason": "valueChanges con takeUntilDestroyed()"
+      },
+      {
+        "code": "subscription-without-cleanup",
+        "evidence": { "file": "src/app/pages/perfil/perfil.component.ts", "line": 53 },
+        "reason": "petición de HttpClient: completa sola"
+      },
+      {
+        "code": "global-dom-query",
+        "evidence": { "file": "src/app/shared/directives/input-effect.directive.ts", "line": 20 },
+        "reason": "querySelector sobre el elemento de la directiva, no sobre document"
+      }
+    ]
+  }
 }

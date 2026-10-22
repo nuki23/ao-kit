@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { finalize, tap } from 'rxjs';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
@@ -35,6 +36,7 @@ export class CrearEditar implements OnInit {
 
   protected readonly esEdicion = computed(() => !!this.id());
   protected readonly guardando = signal(false);
+  protected readonly cargando = signal(false);
   protected readonly ciudades = ['Bogotá', 'Medellín', 'Cali', 'Barranquilla'];
 
   protected readonly form = this.fb.nonNullable.group({
@@ -48,7 +50,14 @@ export class CrearEditar implements OnInit {
   ngOnInit(): void {
     const id = this.id();
     if (id) {
-      this.service.obtener(Number(id)).subscribe((p) => this.form.patchValue(p));
+      this.service
+        .obtener(Number(id))
+        .pipe(
+          // Posible problema (loading-set-true-in-tap): tap corre cuando llega la respuesta, no al pedirla.
+          tap(() => this.cargando.set(true)),
+          finalize(() => this.cargando.set(false)),
+        )
+        .subscribe((p) => this.form.patchValue(p));
     }
   }
 
@@ -74,7 +83,8 @@ export class CrearEditar implements OnInit {
     const body = this.form.getRawValue();
     const id = this.id();
     const peticion = id ? this.service.actualizar(Number(id), body) : this.service.crear(body);
-    peticion.subscribe({
+    // set(false) en tap no es un problema: apaga el indicador al llegar la respuesta.
+    peticion.pipe(tap(() => this.guardando.set(false))).subscribe({
       next: (p) => void this.router.navigate(['/proveedores', p.id]),
       error: () => this.guardando.set(false),
     });

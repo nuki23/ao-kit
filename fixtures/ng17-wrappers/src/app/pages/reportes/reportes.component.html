@@ -3,9 +3,11 @@
 
   <nz-select
     class="reportes__periodo"
+    [class.reportes__periodo--vacio]="!periodo"
     nzPlaceHolder="Periodo"
     [ngModel]="periodo"
     (ngModelChange)="cambiarPeriodo($event)"
+    nzPlaceHolder="Selecciona un periodo"
   >
     <nz-option *ngFor="let p of periodos" [nzValue]="p.id" [nzLabel]="p.nombre"></nz-option>
   </nz-select>

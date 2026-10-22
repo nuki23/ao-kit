@@ -52,6 +52,8 @@ export class PerfilComponent implements OnInit {
   ngOnInit(): void {
     this.catalogosService.ciudades().subscribe((ciudades) => (this.ciudades = ciudades));
     this.perfilService.obtener().subscribe((perfil) => this.form.patchValue(perfil));
+    // Posible problema (subscription-without-cleanup): valueChanges no completa y no se limpia.
+    this.form.valueChanges.subscribe(() => (this.guardado = false));
   }
 
   guardar(): void {

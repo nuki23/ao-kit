@@ -24,8 +24,8 @@ No se instala ni se compila: el escáner solo lee los archivos. `dist/` no exist
 | **Duplicado por inputs**: `app-button` (portal) comparte `variant`, `disabled` y `loading` con `ui-button` | `portal/src/app/shared/button/` | duplicates (4.12) |
 | **Duplicado por template**: `bo-card` (backoffice) tiene inputs con otros nombres (`titulo`, `elevada`) pero el mismo árbol que `ui-card` (section > header? > h3, div > ng-content, footer > ng-content[select]) | `backoffice/src/app/shared/card/` | duplicates (4.12) |
 | **No duplicado**: `bo-button-group` contiene "button" en el nombre, pero su nombre base es `button-group`, tiene otros inputs y otro template | `backoffice/src/app/shared/button-group/` | duplicates (caso negativo) |
-| Usos por proyecto: `ui-button` en las dos apps, `ui-card` solo en portal, `ui-badge` en ninguna (exportado sin usos) | templates de las apps | usages |
+| Usos por proyecto: `ui-button` en las dos apps, `ui-card` solo en portal, `ui-badge` en ninguna (exportado sin usos: `kind: "unused"` con `unusedReason: "exported-not-consumed"`; no cuenta como código muerto) | templates de las apps | usages, unused (4.15) |
 | Standalone de la librería (`Button`) importado y re-exportado por un `NgModule` | `backoffice/src/app/shared/shared.module.ts` | ngmodules (4.10) |
 | `standalone` en tres formas: implícito (lib), `true` explícito (portal) y `false` obligatorio (backoffice) | todos los componentes | conventions (la versión interpreta el default) |
 
-Los conteos exactos (usos por proyecto, duplicados con el criterio que cumplen, warnings y convenciones por proyecto) están en [`expected.json`](./expected.json).
+Los conteos exactos (usos por proyecto, duplicados con el criterio que cumplen y convenciones por proyecto) están en [`expected.json`](./expected.json).

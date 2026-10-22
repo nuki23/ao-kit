@@ -1,257 +1,371 @@
 {
-  "$comment": "Oráculo de lo que ao scan debe detectar en este fixture. Formato informal hasta congelar el esquema de index.json (3.1); los detectores de M4 lo usan como referencia. Rutas relativas al fixture, en POSIX. Los usos cuentan elementos en templates (conteos sacados con grep; ver nota de M4 en TASKS.md).",
-  "stack": {
-    "angularVersion": "20",
-    "workspace": "angular-cli",
-    "projectStructure": "mixed",
-    "uiLibraries": [],
-    "styles": "css",
-    "aliases": {
-      "@acme/ui": {
-        "paths": "./dist/acme-ui",
-        "resolvesTo": "projects/acme-ui/src/public-api.ts",
-        "via": "projects/acme-ui/ng-package.json (dest ../../dist/acme-ui, lib.entryFile src/public-api.ts)",
-        "$comment": "dist/ no existe: el escáner resuelve el alias con el dest de ng-package.json, sin depender de un build"
+  "$comment": "Oráculo de lo que ao scan debe detectar en este fixture. index es un índice parcial con el formato real de .ao/index.json (esquema 3.1, packages/core); los campos que faltan aún no los produce ningún detector y solo se validan por forma. negatives lista lo que no debe detectarse. Rutas relativas al fixture, en POSIX. Los usos cuentan elementos en templates (conteos sacados con grep; ver nota de M4 en TASKS.md). Criterio de duplicados en 4.12 de TASKS.md. Convenciones y rutas por proyecto: promediar el workspace mezclaría tres estilos distintos.",
+  "schemaVersion": 1,
+  "index": {
+    "stack": {
+      "framework": "angular",
+      "angularVersion": "20.3.34",
+      "angularMajor": 20,
+      "workspace": "angular-cli",
+      "zoneless": false,
+      "projectStructure": "mixed",
+      "uiLibraries": [],
+      "styles": { "preprocessors": ["css"], "tailwind": null },
+      "aliases": [
+        {
+          "$comment": "dist/ no existe: el escáner resuelve el alias con el dest de ng-package.json (../../dist/acme-ui) y lib.entryFile, sin depender de un build",
+          "alias": "@acme/ui",
+          "paths": ["./dist/acme-ui"],
+          "resolvesTo": "projects/acme-ui/src/public-api.ts",
+          "via": "projects/acme-ui/ng-package.json"
+        }
+      ]
+    },
+    "projects": [
+      {
+        "name": "portal",
+        "type": "application",
+        "root": "projects/portal",
+        "sourceRoot": "projects/portal/src",
+        "prefix": "app",
+        "builder": "@angular/build:application",
+        "bootstrap": "bootstrapApplication",
+        "projectStructure": "standalone",
+        "packageName": null,
+        "entryFile": null,
+        "consumes": ["@acme/ui"]
+      },
+      {
+        "name": "backoffice",
+        "type": "application",
+        "root": "projects/backoffice",
+        "sourceRoot": "projects/backoffice/src",
+        "prefix": "bo",
+        "builder": "@angular/build:application",
+        "bootstrap": "bootstrapModule",
+        "projectStructure": "ngmodule",
+        "packageName": null,
+        "entryFile": null,
+        "consumes": ["@acme/ui"]
+      },
+      {
+        "name": "acme-ui",
+        "type": "library",
+        "root": "projects/acme-ui",
+        "sourceRoot": "projects/acme-ui/src",
+        "prefix": "ui",
+        "builder": "@angular/build:ng-packagr",
+        "bootstrap": null,
+        "projectStructure": "standalone",
+        "packageName": "@acme/ui",
+        "entryFile": "projects/acme-ui/src/public-api.ts",
+        "consumes": []
       }
-    }
-  },
-  "projects": [
-    {
-      "name": "portal",
-      "type": "application",
-      "root": "projects/portal",
-      "sourceRoot": "projects/portal/src",
-      "prefix": "app",
-      "builder": "@angular/build:application",
-      "bootstrap": "bootstrapApplication",
-      "projectStructure": "standalone",
-      "consumes": ["@acme/ui"]
-    },
-    {
-      "name": "backoffice",
-      "type": "application",
-      "root": "projects/backoffice",
-      "sourceRoot": "projects/backoffice/src",
-      "prefix": "bo",
-      "builder": "@angular/build:application",
-      "bootstrap": "bootstrapModule",
-      "projectStructure": "ngmodule",
-      "consumes": ["@acme/ui"]
-    },
-    {
-      "name": "acme-ui",
-      "type": "library",
-      "root": "projects/acme-ui",
-      "sourceRoot": "projects/acme-ui/src",
-      "prefix": "ui",
-      "builder": "@angular/build:ng-packagr",
-      "packageName": "@acme/ui",
-      "entryFile": "projects/acme-ui/src/public-api.ts",
-      "projectStructure": "standalone"
-    }
-  ],
-  "sharedScopes": [
-    {
-      "scope": "workspace",
-      "source": "projects/acme-ui/src/lib/",
-      "project": "acme-ui",
-      "$comment": "compartido entre proyectos: se consume por el alias @acme/ui"
-    },
-    {
-      "scope": "project",
-      "source": "projects/portal/src/app/shared/",
-      "project": "portal",
-      "$comment": "compartido solo dentro de portal"
-    },
-    {
-      "scope": "project",
-      "source": "projects/backoffice/src/app/shared/",
-      "project": "backoffice",
-      "$comment": "compartido solo dentro de backoffice (vía SharedModule)"
-    }
-  ],
-  "library": {
-    "name": "acme-ui",
-    "exported": [
-      { "selector": "ui-button", "class": "Button", "source": "projects/acme-ui/src/lib/button/" },
-      { "selector": "ui-card", "class": "Card", "source": "projects/acme-ui/src/lib/card/" },
-      { "selector": "ui-badge", "class": "Badge", "source": "projects/acme-ui/src/lib/badge/" }
     ],
-    "internal": [
+    "sharedScopes": [
+      { "$comment": "compartido entre proyectos: se consume por el alias @acme/ui", "scope": "workspace", "project": "acme-ui", "source": "projects/acme-ui/src/lib/" },
+      { "$comment": "compartido solo dentro de portal", "scope": "project", "project": "portal", "source": "projects/portal/src/app/shared/" },
+      { "$comment": "compartido solo dentro de backoffice (vía SharedModule)", "scope": "project", "project": "backoffice", "source": "projects/backoffice/src/app/shared/" }
+    ],
+    "components": [
+      {
+        "id": "projects/acme-ui/src/lib/badge/badge.ts#Badge",
+        "selector": "ui-badge",
+        "className": "Badge",
+        "project": "acme-ui",
+        "scope": "workspace",
+        "exported": true,
+        "inputs": [{ "name": "tone", "required": false, "kind": "signal", "default": "'info'" }],
+        "slots": ["default"],
+        "kind": "unused",
+        "formerKind": "component",
+        "unusedReason": "exported-not-consumed",
+        "wraps": null,
+        "contract": null
+      },
+      {
+        "id": "projects/acme-ui/src/lib/button/button.ts#Button",
+        "selector": "ui-button",
+        "className": "Button",
+        "project": "acme-ui",
+        "scope": "workspace",
+        "exported": true,
+        "inputs": [
+          { "name": "variant", "required": false, "kind": "signal", "default": "'primary'" },
+          { "name": "type", "required": false, "kind": "signal", "default": "'button'" },
+          { "name": "disabled", "required": false, "kind": "signal", "default": "false" },
+          { "name": "loading", "required": false, "kind": "signal", "default": "false" }
+        ],
+        "outputs": [{ "name": "clicked", "kind": "signal" }],
+        "slots": ["default"],
+        "kind": "component",
+        "wraps": null
+      },
+      {
+        "id": "projects/acme-ui/src/lib/card/card.ts#Card",
+        "selector": "ui-card",
+        "className": "Card",
+        "project": "acme-ui",
+        "scope": "workspace",
+        "exported": true,
+        "inputs": [
+          { "name": "title", "required": false, "kind": "signal" },
+          { "name": "elevated", "required": false, "kind": "signal", "default": "false" }
+        ],
+        "slots": ["default", "[uiCardFooter]"],
+        "wraps": null
+      },
+      {
+        "$comment": "no está en public-api.ts: no se ofrece en el catálogo de las apps; lo usa ui-button",
+        "id": "projects/acme-ui/src/lib/spinner/spinner.ts#Spinner",
+        "selector": "ui-spinner",
+        "className": "Spinner",
+        "project": "acme-ui",
+        "scope": "internal",
+        "exported": false,
+        "inputs": [{ "name": "size", "required": false, "kind": "signal", "default": "'md'" }],
+        "slots": [],
+        "kind": "component",
+        "wraps": null
+      },
+      {
+        "id": "projects/portal/src/app/shared/button/button.component.ts#ButtonComponent",
+        "selector": "app-button",
+        "className": "ButtonComponent",
+        "project": "portal",
+        "scope": "project",
+        "exported": null,
+        "standalone": { "effective": true, "explicit": true },
+        "inputs": [
+          { "name": "variant", "required": false, "kind": "decorator" },
+          { "name": "disabled", "required": false, "kind": "decorator" },
+          { "name": "loading", "required": false, "kind": "decorator" }
+        ],
+        "outputs": [{ "name": "clicked", "kind": "decorator" }],
+        "slots": ["default"],
+        "wraps": null
+      },
+      {
+        "id": "projects/backoffice/src/app/shared/card/card.component.ts#CardComponent",
+        "selector": "bo-card",
+        "className": "CardComponent",
+        "project": "backoffice",
+        "scope": "project",
+        "exported": null,
+        "standalone": { "effective": false, "explicit": false },
+        "inputs": [
+          { "name": "titulo", "required": false, "kind": "decorator" },
+          { "name": "elevada", "required": false, "kind": "decorator" }
+        ],
+        "slots": ["default", "[boCardPie]"],
+        "wraps": null
+      },
+      {
+        "id": "projects/backoffice/src/app/shared/button-group/button-group.component.ts#ButtonGroupComponent",
+        "selector": "bo-button-group",
+        "className": "ButtonGroupComponent",
+        "project": "backoffice",
+        "scope": "project",
+        "exported": null,
+        "standalone": { "effective": false, "explicit": false },
+        "inputs": [
+          { "name": "opciones", "required": false, "kind": "decorator" },
+          { "name": "seleccion", "required": false, "kind": "decorator" }
+        ],
+        "outputs": [{ "name": "seleccionChange", "kind": "decorator" }],
+        "slots": [],
+        "kind": "component",
+        "wraps": null
+      }
+    ],
+    "usages": [
+      {
+        "selector": "app-button",
+        "library": null,
+        "total": 2,
+        "byProject": { "portal": 2 },
+        "byFile": [{ "file": "projects/portal/src/app/pages/catalogo/catalogo.component.html", "count": 2 }],
+        "showcase": 0
+      },
+      {
+        "selector": "bo-button-group",
+        "library": null,
+        "total": 1,
+        "byProject": { "backoffice": 1 },
+        "byFile": [
+          {
+            "file": "projects/backoffice/src/app/features/usuarios/usuarios-lista/usuarios-lista.component.html",
+            "count": 1,
+            "evidence": [{ "file": "projects/backoffice/src/app/features/usuarios/usuarios-lista/usuarios-lista.component.html", "line": 7 }]
+          }
+        ],
+        "showcase": 0
+      },
+      {
+        "selector": "bo-card",
+        "library": null,
+        "total": 2,
+        "byProject": { "backoffice": 2 },
+        "byFile": [{ "file": "projects/backoffice/src/app/features/usuarios/usuarios-lista/usuarios-lista.component.html", "count": 2 }],
+        "showcase": 0
+      },
+      {
+        "$comment": "exportado y sin uso: ui-badge es kind unused (exported-not-consumed)",
+        "selector": "ui-badge",
+        "library": null,
+        "total": 0,
+        "byProject": { "portal": 0, "backoffice": 0 },
+        "byFile": [],
+        "showcase": 0
+      },
+      {
+        "selector": "ui-button",
+        "library": null,
+        "total": 3,
+        "byProject": { "portal": 1, "backoffice": 2 },
+        "byFile": [
+          { "file": "projects/backoffice/src/app/features/usuarios/usuarios-lista/usuarios-lista.component.html", "count": 2 },
+          { "file": "projects/portal/src/app/pages/inicio/inicio.component.html", "count": 1 }
+        ],
+        "showcase": 0
+      },
+      {
+        "selector": "ui-card",
+        "library": null,
+        "total": 3,
+        "byProject": { "portal": 3, "backoffice": 0 },
+        "byFile": [
+          { "file": "projects/portal/src/app/pages/catalogo/catalogo.component.html", "count": 1 },
+          { "file": "projects/portal/src/app/pages/inicio/inicio.component.html", "count": 2 }
+        ],
+        "showcase": 0
+      },
       {
         "selector": "ui-spinner",
-        "class": "Spinner",
-        "source": "projects/acme-ui/src/lib/spinner/",
-        "usedBy": ["ui-button"],
-        "$comment": "no está en public-api.ts: no se ofrece en el catálogo de las apps"
+        "library": null,
+        "total": 1,
+        "byProject": { "acme-ui": 1 },
+        "byFile": [{ "file": "projects/acme-ui/src/lib/button/button.html", "count": 1, "evidence": [{ "file": "projects/acme-ui/src/lib/button/button.html", "line": 8 }] }],
+        "showcase": 0
       }
-    ]
-  },
-  "components": [
-    { "selector": "ui-button", "project": "acme-ui", "scope": "workspace", "inputs": ["variant", "type", "disabled", "loading"], "outputs": ["clicked"] },
-    { "selector": "ui-card", "project": "acme-ui", "scope": "workspace", "inputs": ["title", "elevated"], "slots": ["default", "[uiCardFooter]"] },
-    { "selector": "ui-badge", "project": "acme-ui", "scope": "workspace", "inputs": ["tone"] },
-    { "selector": "ui-spinner", "project": "acme-ui", "scope": "internal", "inputs": ["size"] },
-    { "selector": "app-button", "project": "portal", "scope": "project", "inputs": ["variant", "disabled", "loading"], "outputs": ["clicked"] },
-    { "selector": "bo-card", "project": "backoffice", "scope": "project", "inputs": ["titulo", "elevada"], "slots": ["default", "[boCardPie]"] },
-    { "selector": "bo-button-group", "project": "backoffice", "scope": "project", "inputs": ["opciones", "seleccion"], "outputs": ["seleccionChange"] }
-  ],
-  "usages": {
-    "ui-button": {
-      "total": 3,
-      "byProject": { "portal": 1, "backoffice": 2 },
-      "files": [
-        "projects/backoffice/src/app/features/usuarios/usuarios-lista/usuarios-lista.component.html",
-        "projects/portal/src/app/pages/inicio/inicio.component.html"
-      ]
-    },
-    "ui-card": {
-      "total": 3,
-      "byProject": { "portal": 3, "backoffice": 0 },
-      "files": [
-        "projects/portal/src/app/pages/catalogo/catalogo.component.html",
-        "projects/portal/src/app/pages/inicio/inicio.component.html"
-      ]
-    },
-    "ui-badge": { "total": 0, "byProject": { "portal": 0, "backoffice": 0 }, "files": [] },
-    "ui-spinner": {
-      "total": 1,
-      "byProject": { "acme-ui": 1 },
-      "files": ["projects/acme-ui/src/lib/button/button.html"]
-    },
-    "app-button": {
-      "total": 2,
-      "byProject": { "portal": 2 },
-      "files": ["projects/portal/src/app/pages/catalogo/catalogo.component.html"]
-    },
-    "bo-card": {
-      "total": 2,
-      "byProject": { "backoffice": 2 },
-      "files": ["projects/backoffice/src/app/features/usuarios/usuarios-lista/usuarios-lista.component.html"]
-    },
-    "bo-button-group": {
-      "total": 1,
-      "byProject": { "backoffice": 1 },
-      "files": ["projects/backoffice/src/app/features/usuarios/usuarios-lista/usuarios-lista.component.html"]
-    }
-  },
-  "duplicateCriterion": {
-    "$comment": "Ver 4.12 en TASKS.md",
-    "requires": "mismo nombre base del selector sin prefijo",
-    "andAnyOf": ["comparten >= 2 inputs (por nombre)", "estructura de template equivalente (mismo árbol de elementos y slots ng-content; se ignoran clases, bindings y valores de select)"]
-  },
-  "duplicates": [
-    {
-      "a": { "selector": "app-button", "project": "portal", "source": "projects/portal/src/app/shared/button/" },
-      "b": { "selector": "ui-button", "project": "acme-ui", "source": "projects/acme-ui/src/lib/button/" },
-      "baseName": "button",
-      "criteria": {
-        "sharedInputs": { "met": true, "inputs": ["disabled", "loading", "variant"] },
-        "equivalentTemplate": { "met": false, "$comment": "button > (span | ui-spinner condicional) + ng-content: el hijo condicional difiere" }
-      },
-      "suggest": "ui-button"
-    },
-    {
-      "a": { "selector": "bo-card", "project": "backoffice", "source": "projects/backoffice/src/app/shared/card/" },
-      "b": { "selector": "ui-card", "project": "acme-ui", "source": "projects/acme-ui/src/lib/card/" },
-      "baseName": "card",
-      "criteria": {
-        "sharedInputs": { "met": false, "inputs": [], "$comment": "titulo/elevada frente a title/elevated: mismos conceptos, distinto nombre" },
-        "equivalentTemplate": { "met": true, "tree": "section > [header > h3]? , div > ng-content , footer > ng-content[select]" }
-      },
-      "suggest": "ui-card"
-    }
-  ],
-  "notDuplicates": [
-    {
-      "selector": "bo-button-group",
-      "project": "backoffice",
-      "comparedWith": "ui-button",
-      "reason": "nombre base 'button-group' ≠ 'button' (no basta con contener el nombre); además no comparte inputs (opciones, seleccion) y su template es un grupo de botones (div > button*ngFor)"
-    }
-  ],
-  "warnings": [
-    {
-      "type": "duplicate",
-      "message": "app-button (portal/shared) duplica ui-button de @acme/ui: comparte 3 inputs (disabled, loading, variant)",
-      "criterion": "sharedInputs",
-      "files": ["projects/portal/src/app/shared/button/button.component.ts", "projects/acme-ui/src/lib/button/button.ts"]
-    },
-    {
-      "type": "duplicate",
-      "message": "bo-card (backoffice/shared) duplica ui-card de @acme/ui: template equivalente",
-      "criterion": "equivalentTemplate",
-      "files": ["projects/backoffice/src/app/shared/card/card.component.ts", "projects/acme-ui/src/lib/card/card.ts"]
-    },
-    {
-      "type": "unused-export",
-      "message": "ui-badge se exporta en public-api.ts de @acme/ui pero ningún proyecto lo usa",
-      "files": ["projects/acme-ui/src/public-api.ts"]
-    }
-  ],
-  "ngModules": [
-    {
-      "name": "SharedModule",
-      "project": "backoffice",
-      "source": "projects/backoffice/src/app/shared/shared.module.ts",
-      "declarations": ["CardComponent", "ButtonGroupComponent"],
-      "imports": ["CommonModule", "Button"],
-      "exports": ["CommonModule", "Button", "CardComponent", "ButtonGroupComponent"],
-      "$comment": "Button es standalone de @acme/ui, importado y re-exportado por un NgModule"
-    },
-    {
-      "name": "UsuariosModule",
-      "project": "backoffice",
-      "source": "projects/backoffice/src/app/features/usuarios/usuarios.module.ts",
-      "declarations": ["UsuariosListaComponent"],
-      "imports": ["SharedModule", "UsuariosRoutingModule"],
-      "visibleInTemplates": { "components": ["bo-button-group", "bo-card", "ui-button"] },
-      "notVisible": ["ui-badge", "ui-card", "ui-spinner"]
-    }
-  ],
-  "conventions": {
-    "$comment": "Por proyecto: promediar todo el workspace mezclaría tres estilos distintos",
-    "acme-ui": {
-      "standalone": { "standalone": 4, "total": 4, "explicitFlag": 0, "$comment": "implícito (default desde v19)" },
-      "inputs": { "decorator": 0, "signal": 8, "majority": "signal" },
-      "outputs": { "decorator": 0, "signal": 1 },
-      "di": { "constructor": 0, "inject": 0 },
-      "controlFlow": { "structuralDirectives": 0, "blocks": 2, "majority": "blocks" },
-      "fileNaming": "kebab-case.ts sin sufijo (button.ts, clase Button)"
-    },
-    "portal": {
-      "standalone": { "standalone": 4, "total": 4, "explicitFlag": 4, "$comment": "standalone: true explícito aunque es el default en v20" },
-      "inputs": { "decorator": 3, "signal": 0, "majority": "decorator" },
-      "outputs": { "decorator": 1, "signal": 0 },
-      "di": { "constructor": 3, "inject": 0, "majority": "constructor" },
-      "controlFlow": { "structuralDirectives": 4, "blocks": 0, "majority": "structuralDirectives" },
-      "fileNaming": "kebab-case.component.ts"
-    },
-    "backoffice": {
-      "standalone": { "standalone": 0, "total": 4, "explicitFlag": 4, "$comment": "standalone: false obligatorio en v19+ para declarar en NgModule" },
-      "inputs": { "decorator": 4, "signal": 0, "majority": "decorator" },
-      "outputs": { "decorator": 1, "signal": 0 },
-      "di": { "constructor": 2, "inject": 0, "majority": "constructor" },
-      "controlFlow": { "structuralDirectives": 4, "blocks": 0, "majority": "structuralDirectives" },
-      "ngModules": 5,
-      "fileNaming": "kebab-case.component.ts / .module.ts"
-    }
-  },
-  "routes": {
-    "portal": [
-      { "path": "", "redirectTo": "inicio" },
-      { "path": "inicio", "loadComponent": "projects/portal/src/app/pages/inicio/inicio.component.ts#InicioComponent" },
-      { "path": "catalogo", "loadComponent": "projects/portal/src/app/pages/catalogo/catalogo.component.ts#CatalogoComponent" },
-      { "path": "**", "redirectTo": "inicio" }
     ],
-    "backoffice": [
-      { "path": "", "redirectTo": "usuarios" },
+    "duplicates": [
       {
-        "path": "usuarios",
-        "loadChildren": "projects/backoffice/src/app/features/usuarios/usuarios.module.ts#UsuariosModule",
-        "children": [{ "path": "", "component": "UsuariosListaComponent" }]
+        "kind": "component",
+        "a": { "id": "projects/portal/src/app/shared/button/button.component.ts#ButtonComponent", "selector": "app-button", "project": "portal" },
+        "b": { "id": "projects/acme-ui/src/lib/button/button.ts#Button", "selector": "ui-button", "project": "acme-ui" },
+        "baseName": "button",
+        "criteria": {
+          "sharedInputs": { "met": true, "inputs": ["disabled", "loading", "variant"] },
+          "equivalentTemplate": { "$comment": "button > (span | ui-spinner condicional) + ng-content: el hijo condicional difiere", "met": false }
+        },
+        "suggest": "projects/acme-ui/src/lib/button/button.ts#Button"
       },
-      { "path": "**", "redirectTo": "usuarios" }
+      {
+        "kind": "component",
+        "a": { "id": "projects/backoffice/src/app/shared/card/card.component.ts#CardComponent", "selector": "bo-card", "project": "backoffice" },
+        "b": { "id": "projects/acme-ui/src/lib/card/card.ts#Card", "selector": "ui-card", "project": "acme-ui" },
+        "baseName": "card",
+        "criteria": {
+          "sharedInputs": { "$comment": "titulo/elevada frente a title/elevated: mismos conceptos, distinto nombre", "met": false, "inputs": [] },
+          "equivalentTemplate": { "met": true, "tree": "section > [header > h3]? , div > ng-content , footer > ng-content[select]" }
+        },
+        "suggest": "projects/acme-ui/src/lib/card/card.ts#Card"
+      }
+    ],
+    "warnings": [],
+    "ngModules": [
+      {
+        "$comment": "Button es standalone de @acme/ui, importado y re-exportado por un NgModule",
+        "id": "projects/backoffice/src/app/shared/shared.module.ts#SharedModule",
+        "name": "SharedModule",
+        "project": "backoffice",
+        "declarations": ["CardComponent", "ButtonGroupComponent"],
+        "imports": ["CommonModule", "Button"],
+        "exports": ["CommonModule", "Button", "CardComponent", "ButtonGroupComponent"]
+      },
+      {
+        "id": "projects/backoffice/src/app/features/usuarios/usuarios.module.ts#UsuariosModule",
+        "name": "UsuariosModule",
+        "project": "backoffice",
+        "declarations": ["UsuariosListaComponent"],
+        "imports": ["SharedModule", "UsuariosRoutingModule"],
+        "visibleInTemplates": { "components": ["bo-button-group", "bo-card", "ui-button"] },
+        "notVisible": ["ui-badge", "ui-card", "ui-spinner"]
+      }
+    ],
+    "conventions": {
+      "acme-ui": {
+        "standalone": { "$comment": "implícito (default desde v19)", "counts": { "standalone": 4, "ngmodule": 0 }, "majority": "standalone", "divided": false, "explicitFlag": 0 },
+        "inputs": { "counts": { "decorator": 0, "signal": 8 }, "majority": "signal", "divided": false },
+        "outputs": { "counts": { "decorator": 0, "signal": 1 }, "majority": "signal", "divided": false },
+        "di": { "counts": { "constructorParam": 0, "inject": 0 }, "majority": null, "divided": false },
+        "controlFlow": { "counts": { "structural": 0, "blocks": 2 }, "majority": "blocks", "divided": false },
+        "fileNaming": { "pattern": "kebab-case.ts sin sufijo (button.ts, clase Button)" }
+      },
+      "portal": {
+        "standalone": {
+          "$comment": "standalone: true explícito aunque es el default en v20",
+          "counts": { "standalone": 4, "ngmodule": 0 },
+          "majority": "standalone",
+          "divided": false,
+          "explicitFlag": 4
+        },
+        "inputs": { "counts": { "decorator": 3, "signal": 0 }, "majority": "decorator", "divided": false },
+        "outputs": { "counts": { "decorator": 1, "signal": 0 }, "majority": "decorator", "divided": false },
+        "di": { "counts": { "constructorParam": 3, "inject": 0 }, "majority": "constructorParam", "divided": false },
+        "controlFlow": { "counts": { "structural": 4, "blocks": 0 }, "majority": "structural", "divided": false },
+        "fileNaming": { "pattern": "kebab-case.component.ts" }
+      },
+      "backoffice": {
+        "standalone": {
+          "$comment": "standalone: false obligatorio en v19+ para declarar en NgModule; el proyecto tiene 5 NgModules",
+          "counts": { "standalone": 0, "ngmodule": 4 },
+          "majority": "ngmodule",
+          "divided": false,
+          "explicitFlag": 4
+        },
+        "inputs": { "counts": { "decorator": 4, "signal": 0 }, "majority": "decorator", "divided": false },
+        "outputs": { "counts": { "decorator": 1, "signal": 0 }, "majority": "decorator", "divided": false },
+        "di": { "counts": { "constructorParam": 2, "inject": 0 }, "majority": "constructorParam", "divided": false },
+        "controlFlow": { "counts": { "structural": 4, "blocks": 0 }, "majority": "structural", "divided": false },
+        "fileNaming": { "pattern": "kebab-case.component.ts / .module.ts" }
+      }
+    },
+    "routes": {
+      "portal": [
+        { "path": "", "redirectTo": "inicio", "showcase": false },
+        { "path": "inicio", "loadComponent": "projects/portal/src/app/pages/inicio/inicio.component.ts#InicioComponent", "showcase": false },
+        { "path": "catalogo", "loadComponent": "projects/portal/src/app/pages/catalogo/catalogo.component.ts#CatalogoComponent", "showcase": false },
+        { "path": "**", "redirectTo": "inicio", "showcase": false }
+      ],
+      "backoffice": [
+        { "path": "", "redirectTo": "usuarios", "showcase": false },
+        {
+          "path": "usuarios",
+          "loadChildren": "projects/backoffice/src/app/features/usuarios/usuarios.module.ts#UsuariosModule",
+          "showcase": false,
+          "children": [
+            {
+              "path": "",
+              "component": "projects/backoffice/src/app/features/usuarios/usuarios-lista/usuarios-lista.component.ts#UsuariosListaComponent",
+              "showcase": false
+            }
+          ]
+        },
+        { "path": "**", "redirectTo": "usuarios", "showcase": false }
+      ]
+    },
+    "possibleIssues": [],
+    "inertAttributes": []
+  },
+  "negatives": {
+    "notDuplicates": [
+      {
+        "a": "projects/backoffice/src/app/shared/button-group/button-group.component.ts#ButtonGroupComponent",
+        "b": "projects/acme-ui/src/lib/button/button.ts#Button",
+        "reason": "nombre base 'button-group' ≠ 'button' (no basta con contener el nombre); además no comparte inputs (opciones, seleccion) y su template es un grupo de botones (div > button*ngFor)"
+      }
     ]
   }
 }

@@ -38,7 +38,7 @@ agent/
   commands/          init.md, sync.md (fuente única de los prompts)
   templates/         plantillas de .ao/: conventions, catalog, card, pattern, recipe, recommendations (AGENTS.md llega con 6.1)
   profiles/angular-modern/  perfil recomendado (angular-ao refactorizado); cada regla con su versión mínima
-fixtures/            sintéticos; cada uno con README.md y expected.json (oráculo de lo que debe detectar el escáner)
+fixtures/            sintéticos; cada uno con README.md y expected.json (oráculo: índice parcial con el esquema de core + negatives)
   ng12-modules/      NgModules, Angular Material, loadChildren con módulo, SCSS
   ng17-wrappers/     como el proyecto A (Angular 17 standalone con wrappers de ng-zorro): APIs viejas, @Input, constructor DI, wrappers mimi-* con ng-content + ::ng-deep
   ng21-ao/           como el proyecto B (Angular 21 con skill angular-ao): signals, inject(), shared components, showcase /ejemplos

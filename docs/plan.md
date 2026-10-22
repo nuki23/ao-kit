@@ -166,6 +166,14 @@ Fixtures de nivel 1: `ng12-modules` (NgModules + Material), `ng17-wrappers` (sta
 - `/ao:sync`: vuelve a escanear y solo regenera las fichas cuyo hash cambió.
 - `ao scan --check` en un hook de pre-commit o en CI: avisa cuando hay fichas desactualizadas.
 
+### Versionado del índice
+
+`.ao/index.json` lleva `schemaVersion` (hoy `1`; el esquema está en `packages/core/src/schema/`, con la constante `SCHEMA_VERSION`).
+
+- **Cambio incompatible ⇒ `schemaVersion + 1`.** Es incompatible quitar o renombrar un campo, cambiar su tipo, volver obligatorio un campo opcional o quitar un valor de un enum. Agregar un campo opcional o un valor nuevo a un enum no sube la versión.
+- Si `.ao/index.json` tiene otra `schemaVersion`, `ao scan` lo **regenera completo** (sin escaneo incremental) y `/ao:sync` **avisa** de que el índice cambió de formato antes de regenerar las fichas.
+- Los `expected.json` de los fixtures llevan la misma `schemaVersion`: un cambio incompatible los migra en el mismo commit.
+
 ## 3. Comandos futuros
 
 - **/ao:view <prompt | link de Figma>**: (1) interpreta la petición (Figma vía MCP: nodos → componentes y tokens); (2) consulta `catalog.md`; (3) presenta un **plan de reutilización** ("uso page-header, custom-table y quick-search; nuevo: X, por esta razón") y espera confirmación si hay algo nuevo; (4) genera siguiendo la receta; (5) se revisa con /ao:review; (6) crea la ficha si nació un componente nuevo.

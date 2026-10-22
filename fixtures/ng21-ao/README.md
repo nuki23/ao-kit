@@ -26,5 +26,6 @@ No se instala ni se compila: el escáner solo lee los archivos.
 | Tema de ng-zorro en less (`@primary-color`…) | `src/theme.less` | tokens |
 | Íconos con `lucide-angular` | `page-header`, `empty-state` | stack |
 | Builder `@angular/build:application` | `angular.json` | stack |
+| **Posible problema**: `cargando.set(true)` dentro de `tap()` al cargar el proveedor en edición (llega tarde: corre con la respuesta); no lo es `guardando.set(false)` en `tap()` al guardar | `pages/proveedores/crear-editar/crear-editar.ts` | possibleIssues (4.19) |
 
 Los conteos exactos (usos por selector, % standalone, @Input frente a input(), rutas) están en [`expected.json`](./expected.json).

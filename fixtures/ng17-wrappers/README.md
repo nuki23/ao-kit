@@ -24,5 +24,6 @@ No se instala ni se compila: el escáner solo lee los archivos.
 | SCSS con variables (`$color-primary`, `$control-height`…) e `includePaths: ["src"]` | `src/styles/_variables.scss` | tokens (4.7) |
 | Aliases `@core/*`, `@shared/*`, `@env/*` | `tsconfig.json` | stack |
 | Servicios con `HttpClient` y URLs sobre `environment.apiUrl` | `core/services/*` | services (4.8) |
+| **Posibles problemas**, con su caso negativo: `nzPlaceHolder` dos veces en el `nz-select` de reportes (no lo es `class` + `[class.x]`); `form.valueChanges.subscribe` sin limpieza en perfil (no lo son el de solicitudes, con `takeUntilDestroyed()`, ni las peticiones de `HttpClient`); `document.querySelectorAll` en `inputEffectDirective` (no lo es `el.nativeElement.querySelector`) | `pages/reportes`, `pages/perfil`, `pages/solicitudes`, `shared/directives/input-effect.directive.ts` | possibleIssues (4.19) |
 
 Los conteos exactos (usos por selector, % standalone, @Input frente a input(), rutas) están en [`expected.json`](./expected.json).

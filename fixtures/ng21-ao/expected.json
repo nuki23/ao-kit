@@ -1,126 +1,271 @@
 {
-  "$comment": "Oráculo de lo que ao scan debe detectar en este fixture. Formato informal hasta congelar el esquema de index.json (3.1); los detectores de M4 lo usan como referencia. Rutas relativas al fixture, en POSIX. Los usos cuentan elementos en templates.",
-  "stack": {
-    "angularVersion": "21",
-    "builder": "@angular/build:application",
-    "bootstrap": "bootstrapApplication",
-    "projectStructure": "standalone",
-    "uiLibraries": [{ "name": "ng-zorro-antd", "prefixes": ["nz-"] }],
-    "icons": "lucide-angular",
-    "styles": "css",
-    "tailwind": "4",
-    "theme": "src/theme.less",
-    "aliases": {
-      "@shared/*": "src/app/shared/*",
-      "@pages/*": "src/app/pages/*"
-    }
-  },
-  "wrappers": [],
-  "notWrappers": [
-    {
-      "selector": "app-page-header",
-      "reason": "tiene <ng-content /> y en detalle.html y listado.html se le proyectan botones nz-button, pero su template tiene contenido propio (título, subtítulo, volver); no es un wrapper"
-    },
-    {
-      "selector": "app-custom-table",
-      "reason": "usa nz-table dentro de su template (composición), no la proyecta"
-    }
-  ],
-  "sharedComponents": [
-    { "selector": "app-page-header", "source": "src/app/shared/components/page-header/", "inputs": ["title", "subtitle", "backLink", "actionLabel"], "requiredInputs": ["title"], "outputs": ["action"] },
-    { "selector": "app-custom-table", "source": "src/app/shared/components/custom-table/", "inputs": ["columns", "data", "loading", "pageSize", "emptyText", "serverPaging", "total", "pageIndex"], "requiredInputs": ["columns", "data"], "outputs": ["rowClick", "pageChange"] },
-    { "selector": "app-empty-state", "source": "src/app/shared/components/empty-state/", "inputs": ["title", "description", "actionLabel"], "requiredInputs": ["title"], "outputs": ["action"] }
-  ],
-  "usages": {
-    "app-page-header": {
-      "count": 6,
-      "files": [
-        "src/app/pages/ejemplos/ejemplos.html",
-        "src/app/pages/proveedores/crear-editar/crear-editar.html",
-        "src/app/pages/proveedores/detalle/detalle.html",
-        "src/app/pages/proveedores/listado/listado.html"
+  "$comment": "Oráculo de lo que ao scan debe detectar en este fixture. index es un índice parcial con el formato real de .ao/index.json (esquema 3.1, packages/core); los campos que faltan aún no los produce ningún detector y solo se validan por forma. negatives lista lo que no debe detectarse. Rutas relativas al fixture, en POSIX. Los usos cuentan elementos en templates; total y byFile excluyen el showcase /ejemplos, que va aparte en showcase.",
+  "schemaVersion": 1,
+  "index": {
+    "stack": {
+      "framework": "angular",
+      "angularVersion": "21.2.25",
+      "angularMajor": 21,
+      "workspace": "angular-cli",
+      "zoneless": true,
+      "projectStructure": "standalone",
+      "uiLibraries": [{ "name": "ng-zorro-antd", "version": "21.3.3", "prefixes": ["nz-"], "source": "table" }],
+      "icons": [{ "library": "lucide-angular", "version": "1.0.0" }],
+      "state": [],
+      "styles": { "preprocessors": ["css", "less"], "tailwind": "4", "themes": ["src/styles.css", "src/theme.less"] },
+      "aliases": [
+        { "alias": "@pages/*", "paths": ["src/app/pages/*"], "resolvesTo": "src/app/pages/", "via": null },
+        { "alias": "@shared/*", "paths": ["src/app/shared/*"], "resolvesTo": "src/app/shared/", "via": null }
       ]
     },
-    "app-custom-table": {
-      "count": 3,
-      "files": [
-        "src/app/pages/ejemplos/ejemplos.html",
-        "src/app/pages/proveedores/listado/listado.html"
+    "projects": [
+      {
+        "name": "ng21-ao",
+        "type": "application",
+        "root": "",
+        "sourceRoot": "src",
+        "prefix": "app",
+        "builder": "@angular/build:application",
+        "bootstrap": "bootstrapApplication",
+        "projectStructure": "standalone",
+        "packageName": null,
+        "entryFile": null,
+        "consumes": []
+      }
+    ],
+    "components": [
+      {
+        "id": "src/app/shared/components/custom-table/custom-table.ts#CustomTable",
+        "selector": "app-custom-table",
+        "className": "CustomTable",
+        "project": "ng21-ao",
+        "scope": "project",
+        "standalone": { "effective": true, "explicit": null },
+        "changeDetection": { "effective": "OnPush", "explicit": true },
+        "inputs": [
+          { "name": "columns", "required": true, "kind": "signal" },
+          { "name": "data", "required": true, "kind": "signal" },
+          { "name": "loading", "required": false, "kind": "signal", "default": "false" },
+          { "name": "pageSize", "required": false, "kind": "signal", "default": "10" },
+          { "name": "emptyText", "required": false, "kind": "signal", "default": "'No hay registros para mostrar.'" },
+          { "name": "serverPaging", "required": false, "kind": "signal", "default": "false" },
+          { "name": "total", "required": false, "kind": "signal", "default": "0" },
+          { "name": "pageIndex", "required": false, "kind": "signal", "default": "1" }
+        ],
+        "outputs": [
+          { "name": "rowClick", "kind": "signal" },
+          { "name": "pageChange", "kind": "signal" }
+        ],
+        "slots": [],
+        "kind": "component",
+        "wraps": null,
+        "criteria": null,
+        "contract": null
+      },
+      {
+        "id": "src/app/shared/components/empty-state/empty-state.ts#EmptyState",
+        "selector": "app-empty-state",
+        "className": "EmptyState",
+        "project": "ng21-ao",
+        "scope": "project",
+        "inputs": [
+          { "name": "title", "required": true, "kind": "signal" },
+          { "name": "description", "required": false, "kind": "signal" },
+          { "name": "actionLabel", "required": false, "kind": "signal" }
+        ],
+        "outputs": [{ "name": "action", "kind": "signal" }],
+        "slots": [],
+        "kind": "component",
+        "wraps": null
+      },
+      {
+        "id": "src/app/shared/components/page-header/page-header.ts#PageHeader",
+        "selector": "app-page-header",
+        "className": "PageHeader",
+        "project": "ng21-ao",
+        "scope": "project",
+        "inputs": [
+          { "name": "title", "required": true, "kind": "signal" },
+          { "name": "subtitle", "required": false, "kind": "signal" },
+          { "name": "backLink", "required": false, "kind": "signal" },
+          { "name": "actionLabel", "required": false, "kind": "signal" }
+        ],
+        "outputs": [{ "name": "action", "kind": "signal" }],
+        "slots": ["default"],
+        "kind": "slot-container",
+        "wraps": null,
+        "criteria": {
+          "$comment": "en detalle y listado se le proyectan nz-button, pero su template tiene contenido propio (título, subtítulo, volver) y no sobrescribe estilos de ng-zorro",
+          "b": { "met": false, "selectors": [] },
+          "c": { "met": false, "attribute": null }
+        },
+        "contract": null
+      }
+    ],
+    "usages": [
+      {
+        "selector": "app-custom-table",
+        "library": null,
+        "total": 1,
+        "byProject": { "ng21-ao": 1 },
+        "byFile": [{ "file": "src/app/pages/proveedores/listado/listado.html", "count": 1, "evidence": [{ "file": "src/app/pages/proveedores/listado/listado.html", "line": 27 }] }],
+        "showcase": 2
+      },
+      {
+        "selector": "app-empty-state",
+        "library": null,
+        "total": 3,
+        "byProject": { "ng21-ao": 3 },
+        "byFile": [
+          { "file": "src/app/pages/proveedores/detalle/detalle.html", "count": 1, "evidence": [{ "file": "src/app/pages/proveedores/detalle/detalle.html", "line": 22 }] },
+          { "file": "src/app/pages/proveedores/listado/listado.html", "count": 1, "evidence": [{ "file": "src/app/pages/proveedores/listado/listado.html", "line": 20 }] },
+          {
+            "file": "src/app/shared/components/custom-table/custom-table.html",
+            "count": 1,
+            "evidence": [{ "file": "src/app/shared/components/custom-table/custom-table.html", "line": 2 }]
+          }
+        ],
+        "showcase": 2
+      },
+      {
+        "selector": "app-page-header",
+        "library": null,
+        "total": 3,
+        "byProject": { "ng21-ao": 3 },
+        "byFile": [
+          { "file": "src/app/pages/proveedores/crear-editar/crear-editar.html", "count": 1, "evidence": [{ "file": "src/app/pages/proveedores/crear-editar/crear-editar.html", "line": 1 }] },
+          { "file": "src/app/pages/proveedores/detalle/detalle.html", "count": 1, "evidence": [{ "file": "src/app/pages/proveedores/detalle/detalle.html", "line": 2 }] },
+          { "file": "src/app/pages/proveedores/listado/listado.html", "count": 1, "evidence": [{ "file": "src/app/pages/proveedores/listado/listado.html", "line": 1 }] }
+        ],
+        "showcase": 3
+      }
+    ],
+    "conventions": {
+      "ng21-ao": {
+        "standalone": {
+          "$comment": "Ningún componente declara standalone: es el valor por defecto desde v19",
+          "counts": { "standalone": 9, "ngmodule": 0 },
+          "majority": "standalone",
+          "divided": false,
+          "explicitFlag": 0
+        },
+        "di": {
+          "$comment": "grep por 'inject(' da 5: contacto-modal.ts usa inject<ContactoData>(NZ_MODAL_DATA), que el AST sí cuenta",
+          "counts": { "constructorParam": 0, "inject": 6 },
+          "majority": "inject",
+          "divided": false
+        },
+        "inputs": { "counts": { "decorator": 0, "signal": 17 }, "majority": "signal", "divided": false },
+        "outputs": { "counts": { "decorator": 0, "signal": 4 }, "majority": "signal", "divided": false },
+        "controlFlow": { "counts": { "structural": 0, "blocks": 20 }, "majority": "blocks", "divided": false },
+        "changeDetection": { "counts": { "onPush": 9, "eager": 0 }, "majority": "onPush", "divided": false },
+        "fileNaming": { "pattern": "kebab-case.ts sin sufijo .component (estilo v20+); servicios con .service.ts" },
+        "featureLayout": { "pattern": "pages/<feature>/{listado,crear-editar,detalle,data-access}" },
+        "wrapperUsage": []
+      }
+    },
+    "patterns": {
+      "modales": {
+        "approach": "facade",
+        "facade": { "id": "src/app/shared/services/confirm.service.ts#ConfirmService", "wraps": ["NzModalService"] },
+        "evidence": [
+          {
+            "what": "ConfirmService",
+            "files": 2,
+            "evidence": [{ "file": "src/app/pages/proveedores/crear-editar/crear-editar.ts" }, { "file": "src/app/pages/proveedores/detalle/detalle.ts" }]
+          },
+          { "what": "NzModalService directo (fuera de la fachada)", "files": 1, "evidence": [{ "file": "src/app/pages/proveedores/listado/listado.ts", "line": 23 }] }
+        ],
+        "exceptions": [
+          { "file": "src/app/pages/proveedores/listado/listado.ts", "line": 23, "snippet": "inject(NzModalService)", "detail": "ayuda con NzModalService.info directo" }
+        ],
+        "details": {
+          "library": "ng-zorro-antd",
+          "dataPassing": {
+            "mechanism": "nzData + inject(NZ_MODAL_DATA)",
+            "evidence": [
+              { "file": "src/app/shared/services/confirm.service.ts", "line": 37, "snippet": "nzData: datos," },
+              { "file": "src/app/pages/proveedores/detalle/contacto-modal.ts", "line": 19, "snippet": "inject<ContactoData>(NZ_MODAL_DATA)" }
+            ]
+          },
+          "result": {
+            "mechanism": "NzModalRef.close(resultado) + afterClose, expuesto como Promise",
+            "evidence": [{ "file": "src/app/pages/proveedores/detalle/contacto-modal.ts", "line": 25, "snippet": "this.ref.close(this.mensaje().trim());" }]
+          },
+          "provider": { "file": "src/app/app.config.ts", "line": 21, "snippet": "importProvidersFrom(NzModalModule)," }
+        }
+      },
+      "tablas": {
+        "approach": "shared-component",
+        "facade": null,
+        "evidence": [{ "what": "app-custom-table", "files": 1, "evidence": [{ "file": "src/app/pages/proveedores/listado/listado.html", "line": 27 }] }],
+        "exceptions": [],
+        "details": {
+          "facts": [
+            {
+              "key": "paging",
+              "value": "server: [serverPaging], [total], [pageIndex] y (pageChange); página, tamaño y búsqueda viajan en la URL (listarPagina)",
+              "evidence": [{ "file": "src/app/pages/proveedores/listado/listado.html", "line": 31, "snippet": "[serverPaging]=\"true\"" }]
+            },
+            {
+              "key": "responseShape",
+              "value": "Pagina<T> { items, total }",
+              "evidence": [{ "file": "src/app/pages/proveedores/data-access/proveedor.model.ts", "line": 13 }]
+            }
+          ]
+        }
+      }
+    },
+    "routes": {
+      "ng21-ao": [
+        { "path": "", "redirectTo": "proveedores", "showcase": false },
+        {
+          "path": "proveedores",
+          "loadChildren": "src/app/pages/proveedores/proveedores.routes.ts#PROVEEDORES_ROUTES",
+          "showcase": false,
+          "children": [
+            { "path": "", "loadComponent": "src/app/pages/proveedores/listado/listado.ts#Listado", "showcase": false },
+            { "path": "nuevo", "loadComponent": "src/app/pages/proveedores/crear-editar/crear-editar.ts#CrearEditar", "showcase": false },
+            { "path": ":id", "loadComponent": "src/app/pages/proveedores/detalle/detalle.ts#Detalle", "showcase": false },
+            { "path": ":id/editar", "loadComponent": "src/app/pages/proveedores/crear-editar/crear-editar.ts#CrearEditar", "showcase": false }
+          ]
+        },
+        { "path": "ejemplos", "loadComponent": "src/app/pages/ejemplos/ejemplos.ts#Ejemplos", "showcase": true },
+        { "path": "**", "redirectTo": "proveedores", "showcase": false }
       ]
     },
-    "app-empty-state": {
-      "count": 5,
-      "files": [
-        "src/app/pages/ejemplos/ejemplos.html",
-        "src/app/pages/proveedores/detalle/detalle.html",
-        "src/app/pages/proveedores/listado/listado.html",
-        "src/app/shared/components/custom-table/custom-table.html"
-      ]
-    },
-    "showcaseOnly": {
-      "$comment": "Usos dentro de /ejemplos: se restan de count porque los del showcase no cuentan como uso real",
-      "app-page-header": 3,
-      "app-custom-table": 1,
-      "app-empty-state": 3
-    }
+    "services": [
+      { "id": "src/app/shared/services/confirm.service.ts#ConfirmService", "role": "facade", "providedIn": "root", "used": true },
+      { "id": "src/app/pages/proveedores/data-access/proveedores.service.ts#ProveedoresService", "role": "data", "used": true }
+    ],
+    "possibleIssues": [
+      {
+        "code": "loading-set-true-in-tap",
+        "evidence": { "file": "src/app/pages/proveedores/crear-editar/crear-editar.ts", "line": 57, "snippet": "tap(() => this.cargando.set(true))," }
+      }
+    ],
+    "inertAttributes": [],
+    "warnings": []
   },
-  "conventions": {
-    "standalone": {
-      "standalone": 9,
-      "total": 9,
-      "explicitFlag": 0,
-      "percent": 100,
-      "$comment": "Ningún componente declara standalone: es el valor por defecto desde v19"
-    },
-    "di": {
-      "constructor": 0,
-      "inject": 6,
-      "majority": "inject",
-      "$comment": "grep por 'inject(' da 5: contacto-modal.ts usa inject<ContactoData>(NZ_MODAL_DATA), que el AST sí cuenta"
-    },
-    "inputs": { "decorator": 0, "signal": 17, "majority": "signal" },
-    "outputs": { "decorator": 0, "signal": 4 },
-    "controlFlow": { "structuralDirectives": 0, "blocks": 20, "majority": "blocks" },
-    "changeDetection": { "onPush": 9, "default": 0 },
-    "fileNaming": "kebab-case.ts sin sufijo .component (estilo v20+); servicios con .service.ts",
-    "featureLayout": "pages/<feature>/{listado,crear-editar,detalle,data-access}"
-  },
-  "patterns": {
-    "modales": {
-      "approach": "facade",
-      "facade": { "name": "ConfirmService", "source": "src/app/shared/services/confirm.service.ts", "wraps": "NzModalService" },
-      "evidence": [
-        { "uses": "ConfirmService", "files": 2, "where": ["src/app/pages/proveedores/crear-editar/crear-editar.ts", "src/app/pages/proveedores/detalle/detalle.ts"] },
-        { "uses": "NzModalService directo (fuera de la fachada)", "files": 1 }
-      ],
-      "dataPassing": "confirmar({ titulo, mensaje }) y abrir(componente, titulo, datos) → nzData; el contenido lo lee con inject(NZ_MODAL_DATA)",
-      "result": "Promise: confirmar → boolean (nzOnOk / nzOnCancel); abrir → R | undefined (NzModalRef.close(result) + afterClose)",
-      "provider": "importProvidersFrom(NzModalModule) en app.config.ts (NzModalService no es providedIn root)",
-      "exceptions": [{ "file": "src/app/pages/proveedores/listado/listado.ts", "detail": "ayuda con NzModalService.info directo" }]
-    },
-    "tablas": {
-      "approach": "shared-component",
-      "component": "app-custom-table",
-      "paging": [
-        { "mode": "server", "file": "src/app/pages/proveedores/listado/listado.html", "detail": "[serverPaging]=true, [total], [pageIndex], (pageChange); página, tamaño y búsqueda viajan en la URL (listarPagina)" },
-        { "mode": "client", "file": "src/app/pages/ejemplos/ejemplos.html", "detail": "sin serverPaging (showcase)" }
-      ],
-      "responseShape": "Pagina<T> { items, total } en data-access/proveedor.model.ts"
-    }
-  },
-  "routes": [
-    { "path": "", "redirectTo": "proveedores" },
-    {
-      "path": "proveedores",
-      "loadChildren": "src/app/pages/proveedores/proveedores.routes.ts#PROVEEDORES_ROUTES",
-      "children": [
-        { "path": "", "loadComponent": "src/app/pages/proveedores/listado/listado.ts#Listado" },
-        { "path": "nuevo", "loadComponent": "src/app/pages/proveedores/crear-editar/crear-editar.ts#CrearEditar" },
-        { "path": ":id", "loadComponent": "src/app/pages/proveedores/detalle/detalle.ts#Detalle" },
-        { "path": ":id/editar", "loadComponent": "src/app/pages/proveedores/crear-editar/crear-editar.ts#CrearEditar" }
-      ]
-    },
-    { "path": "ejemplos", "loadComponent": "src/app/pages/ejemplos/ejemplos.ts#Ejemplos", "showcase": true },
-    { "path": "**", "redirectTo": "proveedores" }
-  ]
+  "negatives": {
+    "notWrappers": [
+      {
+        "id": "src/app/shared/components/page-header/page-header.ts#PageHeader",
+        "reason": "tiene <ng-content /> y en detalle.html y listado.html se le proyectan botones nz-button, pero su template tiene contenido propio (título, subtítulo, volver): es slot-container"
+      },
+      { "id": "src/app/shared/components/custom-table/custom-table.ts#CustomTable", "reason": "usa nz-table dentro de su template (composición), no la proyecta" }
+    ],
+    "possibleIssues": [
+      {
+        "code": "loading-set-true-in-tap",
+        "evidence": { "file": "src/app/pages/proveedores/crear-editar/crear-editar.ts", "line": 87 },
+        "reason": "set(false) en tap no se reporta: apagar el indicador al llegar la respuesta es correcto"
+      },
+      {
+        "code": "subscription-without-cleanup",
+        "evidence": { "file": "src/app/pages/proveedores/crear-editar/crear-editar.ts", "line": 60 },
+        "reason": "petición de HttpClient: completa sola"
+      }
+    ]
+  }
 }

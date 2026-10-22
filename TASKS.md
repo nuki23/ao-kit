@@ -34,6 +34,7 @@ Resultado de 0.1, 0.2 y 0.2b: `docs/m0-hallazgos.md`.
   - [x] ng17-wrappers: **estado** con `@ngrx/signals` (`signalStore`) en un feature.
   - [x] ng12-modules: **notificaciones con uso directo** (`MatSnackBar` sin fachada), para que la necesidad tenga un caso directo.
   - [x] ng21-ao: **paginación en servidor** en el listado (página y tamaño en la URL de la API) frente a la paginación en cliente de `/ejemplos`.
+  - [x] Casos de 4.19 (posibles problemas), cada código con un positivo y un negativo: ng17-wrappers (`duplicate-attribute`, `subscription-without-cleanup`, `global-dom-query`) y ng21-ao (`loading-set-true-in-tap`). Van en `possibleIssues` y `negatives.possibleIssues` del `expected.json`.
   - CA: cada necesidad de prioridad alta (iconos, modales, notificaciones/errores, formularios, API) tiene al menos un fixture con fachada o forma propia y uno con uso directo de la librería.
 - [x] 2.7 `pnpm fixtures:verify` (`scripts/verify-fixtures.mjs` + `scripts/fixtures.config.json`): copia cada fixture a un directorio temporal fuera del repo, instala sus dependencias y lo compila con su versión de Angular (`ngc`; en ng-multi, antes `ng build` de la librería con ng-packagr).
   - Modos: `compile` (ng21-ao, ng-multi, ng22-modern), `try` (ng17-wrappers: si falla por la versión de Node se reporta "omitido por versión" sin fallar) y `parser-only` (ng12-modules, excluido por decisión; lo dice en la salida).
@@ -44,11 +45,14 @@ Resultado de 0.1, 0.2 y 0.2b: `docs/m0-hallazgos.md`.
   - CA (todo M2): los fixtures no necesitan `npm install` para escanearse (solo se leen los archivos); cada uno tiene `README.md` (patrones que representa) y `expected.json` (lo que debe detectar el escáner).
 
 ## M3 — core
-- [ ] 3.1 Esquema zod de `index.json`: stack, aliases, components[], usages, conventions, tokens, routes, services, warnings, meta (versión de ao-kit, hashes).
-  - `stack` incluye `angularVersion`, `builder`, `uiLibraries[]` (nombre + prefijos, p. ej. `{ name: "ng-zorro-antd", prefixes: ["nz-"] }`) y `projectStructure` (`standalone` | `ngmodule` | `mixed`).
+- [x] 3.1 Esquema zod de `index.json` (`packages/core/src/schema/`): stack, aliases, components[], usages, conventions, tokens, routes, services, warnings, meta (versión de ao-kit, hashes).
+  - `stack` incluye `angularVersion`, `uiLibraries[]` (nombre + prefijos, p. ej. `{ name: "ng-zorro-antd", prefixes: ["nz-"] }`) y `projectStructure` (`standalone` | `ngmodule` | `mixed`).
   - cada componente lleva `kind` (`wrapper` | `slot-container` | `component`); los `wrapper` llevan además `wraps`.
   - `patterns: { <necesidad>: { approach, facade?, evidence[], exceptions[] } }`, con `necesidad` ∈ iconos, modales, notificaciones, formularios, api, estado, auth, tablas, estilos, entornos. `approach` es la forma dominante (p. ej. `"facade"`, `"direct"`, `"base-class"`); `facade` nombra el servicio o componente propio; `evidence[]` y `exceptions[]` citan archivos con conteos.
   - De M0 (`docs/m0-hallazgos.md` §4): `kind` incluye `unused`; evidencia común `{ file, line, snippet? }`; `usages` con distribución por archivo; `contract[]` en los wrappers (`{ piece, required, present, total }`); `docDrift[]`, `inertAttributes[]`, `possibleIssues[]` y `emergentPatterns[]`.
+  - Decisiones: `builder` va por proyecto (`projects[]`), no en `stack`; `conventions` y `routes` van por proyecto (una app sola es un proyecto); los `id` de componentes, directivas, pipes, servicios y módulos son `"<ruta>#<Clase>"`; `details` de `patterns` tipado en las 5 necesidades de prioridad alta y `facts[]` en el resto; `unusedReason` incluye `exported-not-consumed`; `docDrift` solo lo determinista; conteos y nunca porcentajes; sin fechas.
+  - Versionado: cambio incompatible ⇒ `schemaVersion + 1` (docs/plan.md, "Versionado del índice").
+  - Los `expected.json` de los 5 fixtures usan este formato (índice parcial + `negatives`) y un test los valida por forma, comprueba que sus rutas, símbolos y líneas existen y que las convenciones cumplen la regla de mayoría y división.
 - [ ] 3.2 Esquema del frontmatter de la ficha (selector, source, kind, wraps, hash, usedIn).
 - [ ] 3.3 Utilidades: rutas POSIX relativas, hash de contenido, orden estable y escritura atómica.
 - [ ] 3.4 Esquema zod de `.ao/config.json` (opcional, lo escribe el equipo del repo). Si no existe, el escáner usa los valores por defecto. Campos propuestos:
@@ -103,7 +107,8 @@ Nota: los conteos de los `expected.json` de M2 salieron de grep. Si un detector 
 - [ ] 4.15 `unused`: código heredado sin uso. Componentes, directivas y pipes que nadie usa en templates (ni importa en `imports`/`declarations` de otro sitio), servicios que nadie inyecta e interceptores importados pero no registrados en `withInterceptors`/`HTTP_INTERCEPTORS`.
   - Los componentes sin uso llevan `kind: "unused"` (con el `kind` que tendrían en `formerKind`); nunca se usan como ejemplo en fichas ni recetas y van a la sección "Heredado sin uso" de conventions.md y a "Legacy" de catalog.md.
   - Los usos del showcase no cuentan: un componente que solo aparece en el showcase es `unused`.
-  - CA: en ng-multi, `ui-badge` sale `unused`; ningún componente usado en algún template sale `unused`.
+  - `unusedReason`: `no-template-usage`, `showcase-only`, `deprecated-only` o `exported-not-consumed`. Este último es para lo que exporta el public-api de una librería y nadie consume dentro del workspace: conserva `kind: "unused"`, pero no cuenta como código muerto (no va a "Heredado sin uso" ni a recommendations.md; puede tener consumidores fuera del repo).
+  - CA: en ng-multi, `ui-badge` sale `unused` con `exported-not-consumed`; ningún componente usado en algún template sale `unused`.
 - [ ] 4.16 `inertAttributes`: atributos de template con forma de directiva que no hacen nada. Dos casos: (1) coinciden con el selector de una directiva del repo que el componente no importa (standalone) o que su módulo no ve (NgModules, con 4.10); (2) tienen forma de directiva (`appX`, `xDirective`, prefijo propio de la config) y no coinciden con ningún selector conocido (repo, librerías de UI instaladas, Angular).
   - Cada caso va con su evidencia y el número de veces que se repite; la ficha del wrapper lo marca "se escribe siempre, no tiene efecto" y recommendations.md lo lista.
   - CA: un fixture con un atributo inerte de cada tipo da exactamente esos dos; ningún atributo HTML estándar, `aria-*`, `data-*` ni input de un componente sale como inerte.
@@ -112,6 +117,12 @@ Nota: los conteos de los `expected.json` de M2 salieron de grep. Si un detector 
   - CA: en ng17-wrappers, el contrato de `mimi-select` da `mimi-select`, `inputEffectDirective`, `mimiType` y `formControlName` como `required` (3/3) y `nzShowSearch` como opcional (2/3).
 - [ ] 4.18 `emergentPatterns`: patrones de dominio fuera de las 10 necesidades fijas. Una función o servicio propio usado en ≥ N features distintas (N por defecto 3, configurable) que no es componente ni ya cuenta como fachada de una necesidad. El escáner da el símbolo, el conteo y la distribución por feature; la IA en `/ao:init` le pone nombre y decide si merece `patterns/<nombre>.md`.
   - CA: en un fixture con una función de permisos usada en 3 features, sale como emergente con sus 3 features; una utilidad usada en 1 sola feature no sale.
+- [ ] 4.19 `possibleIssues`: posibles problemas con códigos de alta precisión, sin falsos positivos. Una entrada por ocurrencia, con evidencia. Lo que no cumple exactamente la regla no se reporta (lo marca la IA como "a revisar", fuera del índice).
+  - `duplicate-attribute`: el mismo atributo o binding dos veces en un elemento (`class` y `[class.x]` son distintos).
+  - `loading-set-true-in-tap`: `x.set(true)` dentro de `tap()` en el mismo `pipe` que la request. `set(false)` en `tap` no se reporta.
+  - `subscription-without-cleanup`: `subscribe` sin `takeUntilDestroyed`/`unsubscribe`/`async`, solo sobre fuentes que no completan (`valueChanges`, `params`/`queryParams` de la ruta, `interval`/`timer`, `fromEvent`, selects de un store). `HttpClient` no se reporta.
+  - `global-dom-query`: `document.querySelector*` / `document.getElementsBy*` dentro de un componente o directiva (no sobre `nativeElement`).
+  - CA: cada código tiene un caso positivo y uno negativo en los fixtures (ver 2.6); el detector da exactamente los `possibleIssues` de cada `expected.json` y ninguno de sus `negatives.possibleIssues`.
 
 ## M5 — CLI
 - [ ] 5.1 `ao scan [path]`: escribe `.ao/index.json`, imprime un resumen y es incremental por hash.

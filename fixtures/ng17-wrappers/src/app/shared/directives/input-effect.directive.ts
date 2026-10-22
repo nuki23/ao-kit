@@ -13,7 +13,11 @@ export class InputEffectDirective {
 
   @HostListener('focusin')
   onFocus(): void {
+    // Posible problema (global-dom-query): busca en todo el documento, no solo en este control.
+    document.querySelectorAll('.is-focused').forEach((otro) => this.renderer.removeClass(otro, 'is-focused'));
     this.renderer.addClass(this.el.nativeElement, 'is-focused');
+    // No es global: la búsqueda se limita al elemento de la directiva.
+    this.el.nativeElement.querySelector('input')?.select();
   }
 
   @HostListener('focusout')

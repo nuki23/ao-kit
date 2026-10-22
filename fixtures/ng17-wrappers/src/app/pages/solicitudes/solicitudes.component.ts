@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -50,7 +51,12 @@ export class SolicitudesComponent implements OnInit {
     private fb: FormBuilder,
     private catalogosService: CatalogosService,
     private notificaciones: NotificacionesService,
-  ) {}
+  ) {
+    // Con limpieza: takeUntilDestroyed en el contexto de inyección del constructor.
+    this.form.controls.tipo.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.form.controls.descripcion.markAsUntouched());
+  }
 
   ngOnInit(): void {
     this.catalogosService.tiposSolicitud().subscribe((tipos) => (this.tipos = tipos));
