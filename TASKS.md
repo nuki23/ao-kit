@@ -54,7 +54,9 @@ Resultado de 0.1, 0.2 y 0.2b: `docs/m0-hallazgos.md`.
   - Versionado: cambio incompatible ⇒ `schemaVersion + 1` (docs/plan.md, "Versionado del índice").
   - Los `expected.json` de los 5 fixtures usan este formato (índice parcial + `negatives`) y un test los valida por forma, comprueba que sus rutas, símbolos y líneas existen y que las convenciones cumplen la regla de mayoría y división.
 - [ ] 3.2 Esquema del frontmatter de la ficha (selector, source, kind, wraps, hash, usedIn).
-- [ ] 3.3 Utilidades: rutas POSIX relativas, hash de contenido, orden estable y escritura atómica.
+- [x] 3.3 Utilidades: rutas POSIX relativas, hash de contenido, orden estable y escritura atómica.
+  - `packages/core/src/utils/`: `toPosixRelative` (null fuera de la raíz, nunca `..`), `hashContent` (sha256 hex completo, sin BOM UTF-8 inicial y con CRLF → LF), `combineHashes` (para `meta.inputsHash`), `compareCodePoint`/`sortBy`/`sortRecord` (nunca `localeCompare`), `serializeIndex` y `writeFileAtomic` (temporal + rename, con reintentos por EPERM/EBUSY en Windows).
+  - `serializeIndex` ordena las colecciones de primer nivel y las claves de los records; los arrays anidados (rutas, inputs, contrato, evidencia) conservan el orden del detector.
 - [ ] 3.4 Esquema zod de `.ao/config.json` (opcional, lo escribe el equipo del repo). Si no existe, el escáner usa los valores por defecto. Campos propuestos:
   - prefijos propios de UI, que se suman a la tabla de 4.4;
   - globs a ignorar;

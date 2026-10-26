@@ -2,3 +2,4 @@
 export const AO_DIR = '.ao';
 
 export * from './schema/index.js';
+export * from './utils/index.js';
