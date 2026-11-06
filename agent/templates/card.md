@@ -1,13 +1,14 @@
 ---
-# ao: frontmatter de la ficha (esquema CardFrontmatter de core). Lo escribe /ao:init desde el índice; /ao:sync compara el hash. Solo YAML plano: sin tags, anclas ni "---js".
+# ao: frontmatter de la ficha (esquema CardFrontmatter de core). Lo escribe /ao:init; /ao:sync compara el hash. Solo YAML plano: sin tags, anclas ni "---js".
 schemaVersion: 1
 id: <components[].id del índice, "<ruta>#<Clase>">
 selector: mimi-select
 source: src/app/shared/components/ui/mimi-select/
 kind: wrapper            # wrapper | slot-container | component
-wraps: nz-select         # solo si kind: wrapper
-hash: <hash del componente en index.json>
-usedIn: 3                # usos reales (sin showcase ni deprecated)
+wraps: nz-select         # solo si kind: wrapper; si no, null
+generatedBy: scan        # scan (desde index.json) | prompt (sin índice: el agente analizó el repo)
+hash: <hash del componente en index.json; null con generatedBy: prompt>
+usedIn: 3                # usos reales (sin showcase ni deprecated); con prompt, los cuenta el agente
 ---
 
 # mimi-select

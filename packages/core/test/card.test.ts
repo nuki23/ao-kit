@@ -12,7 +12,7 @@ const filled = template
       'src/app/shared/components/ui/mimi-select/mimi-select.component.ts#MimiSelectComponent',
     ),
   )
-  .replace('<hash del componente en index.json>', 'a'.repeat(64));
+  .replace('<hash del componente en index.json; null con generatedBy: prompt>', 'a'.repeat(64));
 
 const card: CardFrontmatter = {
   schemaVersion: 1,
@@ -21,6 +21,7 @@ const card: CardFrontmatter = {
   source: 'src/app/shared/mimi-select/',
   kind: 'wrapper',
   wraps: 'nz-select',
+  generatedBy: 'scan',
   hash: 'b'.repeat(64),
   usedIn: 3,
 };
@@ -60,6 +61,27 @@ describe('frontmatter de la ficha', () => {
     expect(CardFrontmatter.safeParse({ ...card, wraps: null }).success).toBe(false);
     expect(CardFrontmatter.safeParse({ ...card, kind: 'unused' }).success).toBe(false);
     expect(CardFrontmatter.safeParse({ ...card, source: 'src/app/x' }).success).toBe(false);
+  });
+
+  it('generatedBy: hash null si y solo si la ficha la escribió el prompt', () => {
+    const prompt: CardFrontmatter = { ...card, generatedBy: 'prompt', hash: null };
+    expect(CardFrontmatter.safeParse(prompt).success).toBe(true);
+    const text = stringifyCard(prompt, '');
+    expect(text).toContain('generatedBy: prompt\nhash: null\n');
+    expect(parseCard(text)).toEqual({ ok: true, data: prompt, body: '' });
+    expect(errors(text.replace('hash: null', `hash: ${'c'.repeat(64)}`))).toEqual([
+      'hash: va null si y solo si generatedBy es prompt',
+    ]);
+    expect(errors(stringifyCard(card, '').replace(/^hash: .*$/m, 'hash: null'))).toEqual([
+      'hash: va null si y solo si generatedBy es prompt',
+    ]);
+    expect(CardFrontmatter.safeParse({ ...card, generatedBy: 'ia' }).success).toBe(false);
+    expect(CardFrontmatter.safeParse({ ...card, generatedBy: undefined }).success).toBe(false);
+  });
+
+  it('usedIn es obligatorio también con generatedBy prompt (lo cuenta el agente)', () => {
+    const prompt = { ...card, generatedBy: 'prompt', hash: null };
+    expect(CardFrontmatter.safeParse({ ...prompt, usedIn: undefined }).success).toBe(false);
   });
 
   it('errores legibles: sin frontmatter, sin cierre, campo faltante o desconocido', () => {

@@ -5,8 +5,16 @@ import { Count, Hash, PosixPath, SymbolId } from './common.js';
 export const CARD_SCHEMA_VERSION = 1;
 
 /**
- * Frontmatter de `.ao/components/<selector>.md`. Lo escribe /ao:init desde el índice y /ao:sync
- * compara `hash` con `components[].hash` para saber si la ficha quedó vieja.
+ * Quién escribió la ficha: `scan`, /ao:init a partir de `.ao/index.json`; `prompt`, /ao:init sin
+ * índice (el agente analizó el repo él mismo). Una ficha `prompt` no tiene hash: /ao:sync la
+ * regenera completa cuando haya índice.
+ */
+export const CardGeneratedBy = z.enum(['scan', 'prompt']);
+export type CardGeneratedBy = z.infer<typeof CardGeneratedBy>;
+
+/**
+ * Frontmatter de `.ao/components/<selector>.md`. Lo escribe /ao:init y /ao:sync compara `hash`
+ * con `components[].hash` para saber si la ficha quedó vieja.
  * No hay fichas de componentes `unused`.
  */
 export const CardFrontmatter = z
@@ -20,12 +28,19 @@ export const CardFrontmatter = z
     kind: z.enum(['wrapper', 'slot-container', 'component']),
     /** Elemento que envuelve; solo en kind wrapper. */
     wraps: z.string().min(1).nullable(),
-    /** `components[].hash` del índice. */
-    hash: Hash,
-    /** Usos reales (sin showcase ni deprecated). */
+    generatedBy: CardGeneratedBy,
+    /** `components[].hash` del índice; `null` si y solo si `generatedBy` es `prompt`. */
+    hash: Hash.nullable(),
+    /** Usos reales (sin showcase ni deprecated). Con `generatedBy: prompt`, los cuenta el agente. */
     usedIn: Count,
   })
   .superRefine((card, ctx) => {
+    if ((card.generatedBy === 'prompt') !== (card.hash === null))
+      ctx.addIssue({
+        code: 'custom',
+        path: ['hash'],
+        message: 'va null si y solo si generatedBy es prompt',
+      });
     if ((card.kind === 'wrapper') !== (card.wraps !== null))
       ctx.addIssue({
         code: 'custom',
