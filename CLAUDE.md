@@ -24,7 +24,7 @@ Plan completo: `docs/plan.md`. Backlog: `TASKS.md` (trabaja una tarea a la vez y
 - pnpm workspaces; paquetes internos con `workspace:*`.
 - Build: tsup. Tests: vitest (snapshots sobre fixtures). Validación: zod.
 - Angular: `ts-morph` para TS y `@angular/compiler` (`parseTemplate`) para templates. Nunca regex para HTML.
-- CLI: `commander`. Archivos: `fast-glob`. Frontmatter: `gray-matter`.
+- CLI: `commander`. Archivos: `fast-glob`. Frontmatter: `yaml` (esquema core, sin tags ni aliases; los `---` se delimitan a mano). Nunca `gray-matter`: ejecuta bloques `---js` y las fichas viven en repos ajenos.
 - Versionado y publicación: changesets.
 
 ## Estructura
@@ -90,6 +90,7 @@ Al terminar cada tarea (o cada bloque lógico de cambios), **no hagas commit**. 
    - Cuerpo: qué cambió y decisiones tomadas; sin relleno.
    - Nunca incluyas líneas Co-Authored-By, "Generated with Claude Code" ni ninguna atribución a Claude o Anthropic en mensajes de commit o PR.
 3. Si los cambios mezclan cosas distintas, propón **varios commits** separados, cada uno con sus archivos y su mensaje.
+4. Siempre entrega los commits como un script .git/AO_COMMITS.sh que Fran ejecuta; nunca como comandos largos en el chat.
 
 ## Cómo trabajar una tarea
 1. Leer la tarea en TASKS.md y su criterio de aceptación.

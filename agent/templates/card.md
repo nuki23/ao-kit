@@ -1,5 +1,7 @@
 ---
-# ao: frontmatter de la ficha (esquema en 3.2). Lo escribe /ao:init desde el índice; /ao:sync compara el hash.
+# ao: frontmatter de la ficha (esquema CardFrontmatter de core). Lo escribe /ao:init desde el índice; /ao:sync compara el hash. Solo YAML plano: sin tags, anclas ni "---js".
+schemaVersion: 1
+id: <components[].id del índice, "<ruta>#<Clase>">
 selector: mimi-select
 source: src/app/shared/components/ui/mimi-select/
 kind: wrapper            # wrapper | slot-container | component
