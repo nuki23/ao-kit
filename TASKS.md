@@ -78,7 +78,7 @@ No reemplaza tareas: cambia el orden. `/ao:init` funciona sin `.ao/index.json` (
   - CA: en la copia de ng21-ao con `.ao/` generado, "listado de categorías con filtros y paginación" reutiliza page-header, custom-table y empty-state sin crear duplicados, y el fixture sigue compilando (`fixtures:verify` sobre la copia).
 - [x] F.5 Plugin de Claude Code en este repo: marketplace en la raíz y plugin `ao` con init y view (`/ao:init`, `/ao:view`), con la estructura verificada en la documentación oficial. Las plantillas viajan dentro del plugin y los comandos las referencian de forma que funcione instalado.
   - CA: instalando desde la ruta local del repo, `/ao:init` y `/ao:view` aparecen y encuentran las plantillas.
-- [ ] F.6 README: instalación en 3 pasos (marketplace add `nuki23/ao-kit`, install, `/ao:init`) y uso de `/ao:view`. Sección "uso manual" para Codex y agy (qué copiar y dónde, con las rutas verificadas).
+- [x] F.6 README: instalación en 3 pasos (marketplace add `nuki23/ao-kit`, install, `/ao:init`) y uso de `/ao:view`. Sección "uso manual" para Codex y agy (qué copiar y dónde, con las rutas verificadas).
 
 ## M4 — scanner-angular
 Nota: los conteos de los `expected.json` de M2 salieron de grep. Si un detector basado en AST da otro número y la diferencia está justificada (ocurrencias en comentarios o strings, por ejemplo), se corrige el `expected.json` y se explica en el commit; nunca se ajusta el detector para que coincida con grep.
