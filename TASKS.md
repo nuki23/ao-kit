@@ -56,7 +56,7 @@ Resultado de 0.1, 0.2 y 0.2b: `docs/m0-hallazgos.md`.
 - [ ] 3.2 Esquema del frontmatter de la ficha (selector, source, kind, wraps, hash, usedIn).
 - [x] 3.3 Utilidades: rutas POSIX relativas, hash de contenido, orden estable y escritura atómica.
   - `packages/core/src/utils/`: `toPosixRelative` (null fuera de la raíz, nunca `..`), `hashContent` (sha256 hex completo, sin BOM UTF-8 inicial y con CRLF → LF), `combineHashes` (para `meta.inputsHash`), `compareCodePoint`/`sortBy`/`sortRecord` (nunca `localeCompare`), `serializeIndex` y `writeFileAtomic` (temporal + rename, con reintentos por EPERM/EBUSY en Windows).
-  - `serializeIndex` ordena las colecciones de primer nivel y las claves de los records; los arrays anidados (rutas, inputs, contrato, evidencia) conservan el orden del detector.
+  - `serializeIndex` ordena las claves de los records y todos los arrays con un criterio fijo (evidencia por archivo:línea, strings por valor, objetos por su clave), salvo los de orden semántico, listados en `ORDERED_ARRAYS`: routes y children, canActivate, inputs, outputs, slots, files.styles, aliases[].paths y patterns.api.details.interceptors. Un array nuevo del esquema sin criterio hace fallar la carga del módulo.
 - [ ] 3.4 Esquema zod de `.ao/config.json` (opcional, lo escribe el equipo del repo). Si no existe, el escáner usa los valores por defecto. Campos propuestos:
   - prefijos propios de UI, que se suman a la tabla de 4.4;
   - globs a ignorar;

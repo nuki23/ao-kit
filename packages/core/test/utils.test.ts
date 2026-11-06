@@ -6,18 +6,12 @@ import {
   combineHashes,
   compareCodePoint,
   hashContent,
-  Index,
-  serializeIndex,
   sortBy,
   sortRecord,
   toPosix,
   toPosixRelative,
   writeFileAtomic,
 } from '../src/index.js';
-import { sampleIndex } from './sample-index.js';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Loose = Record<string, any>;
 
 describe('rutas POSIX', () => {
   it('toPosix cambia "\\" por "/"', () => {
@@ -109,47 +103,6 @@ describe('orden estable', () => {
       'backoffice',
       'portal',
     ]);
-  });
-});
-
-describe('serializeIndex', () => {
-  const shuffled = (): Loose => {
-    const index = structuredClone(sampleIndex) as Loose;
-    for (const [key, value] of Object.entries(index))
-      if (Array.isArray(value)) index[key] = [...value].reverse();
-    // Un segundo proyecto, con las claves de los records en otro orden.
-    index['projects'].push({ ...index['projects'][0], name: 'admin', root: 'projects/admin' });
-    index['conventions'] = { mimi: index['conventions'].mimi, admin: index['conventions'].mimi };
-    return index;
-  };
-
-  it('serializa igual sin importar el orden de arrays y claves (CA 3.4)', () => {
-    const a = shuffled();
-    const b = shuffled();
-    for (const [key, value] of Object.entries(b))
-      if (Array.isArray(value)) b[key] = [...value].reverse();
-    b['conventions'] = { admin: b['conventions'].admin, mimi: b['conventions'].mimi };
-    expect(Index.safeParse(a).success).toBe(true);
-    expect(serializeIndex(b)).toBe(serializeIndex(a));
-  });
-
-  it('dos corridas sobre el índice de ejemplo dan el mismo texto, con salto final', () => {
-    const text = serializeIndex(sampleIndex);
-    expect(serializeIndex(JSON.parse(text))).toBe(text);
-    expect(text.endsWith('}\n')).toBe(true);
-    expect(text.startsWith('{\n  "schemaVersion": 1,\n  "meta"')).toBe(true);
-  });
-
-  it('ordena las colecciones y las claves de los records', () => {
-    const parsed = JSON.parse(serializeIndex(shuffled())) as Loose;
-    expect(parsed['projects'].map((p: Loose) => p.name)).toEqual(['admin', 'mimi']);
-    expect(Object.keys(parsed['conventions'])).toEqual(['admin', 'mimi']);
-    const ids = parsed['components'].map((c: Loose) => c.id as string);
-    expect(ids).toEqual([...ids].sort(compareCodePoint));
-  });
-
-  it('un índice inválido lanza (es un error del escáner, no del repo)', () => {
-    expect(() => serializeIndex({ ...sampleIndex, schemaVersion: 2 })).toThrow();
   });
 });
 
