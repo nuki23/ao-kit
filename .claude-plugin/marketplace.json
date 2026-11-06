@@ -1,0 +1,15 @@
+{
+  "name": "ao-kit",
+  "owner": {
+    "name": "nuki23",
+    "url": "https://github.com/nuki23"
+  },
+  "description": "Contexto de proyecto para agentes de código: /ao:init documenta cómo se trabaja en el repo (.ao/) y /ao:view genera vistas reutilizando lo que ya existe.",
+  "plugins": [
+    {
+      "name": "ao",
+      "source": "./plugins/ao",
+      "description": "Contexto de proyecto para agentes de código: /ao:init documenta cómo se trabaja en el repo (.ao/) y /ao:view genera vistas reutilizando lo que ya existe."
+    }
+  ]
+}
