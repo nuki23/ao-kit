@@ -67,6 +67,19 @@ Resultado de 0.1, 0.2 y 0.2b: `docs/m0-hallazgos.md`.
   - `conventions`: overrides que fuerzan una dirección aunque no sea mayoría (p. ej. `{ "inputs": "signal" }`). En conventions.md aparecen marcados "decisión del equipo" junto con el % observado.
   - CA: un índice de ejemplo pasa la validación y su JSON serializado es estable entre corridas; un config inválido da un error legible, no una excepción.
 
+## M-fast — Versión usable ya, solo con prompts (sin escáner)
+No reemplaza tareas: cambia el orden. `/ao:init` funciona sin `.ao/index.json` (el agente analiza el repo él mismo) y, cuando exista M4, se conecta al índice. Después de M-fast siguen 3.4 y M4, como estaba planeado.
+- [ ] F.1 `generatedBy` en `CardFrontmatter`: `scan` | `prompt`; `hash` es `null` si y solo si `generatedBy: prompt`; `usedIn` sigue obligatorio (con `prompt`, el conteo lo hace el agente); `CARD_SCHEMA_VERSION` sigue en 1.
+- [ ] F.2 `ao validate <dir .ao>` en la CLI: valida el frontmatter de cada ficha con `parseCard` y que existan los archivos que piden las plantillas. Código de salida ≠ 0 si algo falla.
+  - CA: pasa sobre una `.ao` de ejemplo válida y falla con una ficha rota.
+- [ ] F.3 `agent/commands/init.md` (`/ao:init`): usa `.ao/index.json` si existe y es válido; si no, analiza el repo él mismo y escribe las fichas con `generatedBy: prompt`. Llena las plantillas de `agent/templates/` siguiendo CLAUDE.md y `docs/m0-hallazgos.md` (evidencia archivo:línea y conteos, observado vs recomendado, código sin uso nunca como ejemplo, contrato observado en wrappers, atributos inertes, contradicciones docs↔código, showcase excluido, `lowSample` sin pregunta, preguntas solo si la convención está dividida y "pendiente de confirmar" si no hay usuario). Lee `.ao/config.json` si existe. Agrega o crea en AGENTS.md la sección "Contexto del proyecto (ao-kit)" y asegura que CLAUDE.md importe `@AGENTS.md`, sin borrar contenido. No modifica código del proyecto. Al final corre `ao validate` si está disponible.
+  - CA (en copias temporales de ng17-wrappers y ng21-ao): genera todos los archivos; `ao validate` pasa; `mimi-select` sale como wrapper con contrato; ningún componente unused aparece como ejemplo; `git diff` solo muestra `.ao/`, AGENTS.md y CLAUDE.md.
+- [ ] F.4 `agent/commands/view.md` (`/ao:view <prompt | link de Figma>`): lee `.ao/` (si no existe, pide correr `/ao:init`). Fase 1: plan de reutilización (componentes, patrones y receta con la ruta de su ficha; lo nuevo, con justificación); si todo existe sigue sin preguntar, si hay algo nuevo pregunta una vez. Fase 2: genera siguiendo la receta, los contratos de los wrappers y las convenciones (o la decisión del equipo si hay override). Fase 3: autorrevisión (sin duplicados, sin atributos inertes, sin legacy como ejemplo) y reporte breve. Si crea un componente compartido, agrega su ficha y su fila en catalog.md. Figma: usa el MCP de Figma si está disponible; si no, pide una captura.
+  - CA: en la copia de ng21-ao con `.ao/` generado, "listado de categorías con filtros y paginación" reutiliza page-header, custom-table y empty-state sin crear duplicados, y el fixture sigue compilando (`fixtures:verify` sobre la copia).
+- [ ] F.5 Plugin de Claude Code en este repo: marketplace en la raíz y plugin `ao` con init y view (`/ao:init`, `/ao:view`), con la estructura verificada en la documentación oficial. Las plantillas viajan dentro del plugin y los comandos las referencian de forma que funcione instalado.
+  - CA: instalando desde la ruta local del repo, `/ao:init` y `/ao:view` aparecen y encuentran las plantillas.
+- [ ] F.6 README: instalación en 3 pasos (marketplace add `nuki23/ao-kit`, install, `/ao:init`) y uso de `/ao:view`. Sección "uso manual" para Codex y agy (qué copiar y dónde, con las rutas verificadas).
+
 ## M4 — scanner-angular
 Nota: los conteos de los `expected.json` de M2 salieron de grep. Si un detector basado en AST da otro número y la diferencia está justificada (ocurrencias en comentarios o strings, por ejemplo), se corrige el `expected.json` y se explica en el commit; nunca se ajusta el detector para que coincida con grep.
 
@@ -137,25 +150,25 @@ Nota: los conteos de los `expected.json` de M2 salieron de grep. Si un detector 
   - CA: ningún detector lanza excepción en el corpus; los fallos quedan en `warnings[]`.
 
 ## M6 — Prompts y perfil
-- [ ] 6.1 `agent/commands/init.md`: corre `ao scan` si no hay índice, lee el índice, abre solo los archivos que cita y genera AGENTS.md, CLAUDE.md (`@AGENTS.md`), `.ao/*` y la skill del proyecto.
+- [ ] 6.1 `agent/commands/init.md`: corre `ao scan` si no hay índice, lee el índice, abre solo los archivos que cita y genera AGENTS.md, CLAUDE.md (`@AGENTS.md`), `.ao/*` y la skill del proyecto. — **adelantada a M-fast** (se completa conectando /ao:init al índice cuando exista M4)
   - Por cada necesidad con evidencia en `patterns`, genera `.ao/patterns/<necesidad>.md` con: la forma del proyecto (fachada o enfoque), 1–2 ejemplos reales citados del repo, una sección "no hacer" (p. ej. "no inyectes NzModalService directo; usa ConfirmService") y las excepciones encontradas.
   - Las necesidades sin evidencia no van en `patterns` ni tienen archivo en `.ao/patterns/`. Si son de prioridad alta (iconos, modales, notificaciones/errores, formularios, api), se anotan en `recommendations.md` como **"no detectado"** con lo que falta (p. ej. "sin interceptor de errores HTTP: cada pantalla maneja sus errores"), sin inventar una forma. ng22-modern trae este caso (`recommendationsNotDetected` en su `expected.json`).
 - [ ] 6.2 `agent/profiles/angular-modern` (antes angular-21): angular-ao refactorizado. Cada regla declara su versión mínima de Angular (p. ej. `input()` ≥ 17.1, control flow `@if` ≥ 17, Signal Forms ≥ 22, `@switch` con `@default never` ≥ 22, sobre una expresión estrechable con `@let`) y solo se recomienda si el repo la cumple. Resolver la contradicción lucide-angular vs @ng-icons e integrar shared-components y styling desde la copia del proyecto B.
 - [ ] 6.3 Regla en el prompt: lo observado > el perfil; las diferencias van a recommendations.md.
   - CA: /ao:init en ng17-wrappers NO recomienda escribir con signals en las fichas, solo en recommendations.md.
-- [ ] 6.4 Preguntas puntuales en `/ao:init`: cuando una convención está dividida (`divided: true` en el índice), el agente pregunta cuál seguir en código nuevo, mostrando los conteos y archivos de ejemplo de cada lado, en vez de elegir solo. La respuesta queda en conventions.md como decisión del equipo.
+- [ ] 6.4 Preguntas puntuales en `/ao:init`: cuando una convención está dividida (`divided: true` en el índice), el agente pregunta cuál seguir en código nuevo, mostrando los conteos y archivos de ejemplo de cada lado, en vez de elegir solo. La respuesta queda en conventions.md como decisión del equipo. — **adelantada a M-fast** (se completa conectando /ao:init al índice cuando exista M4)
   - Regla de `divided` (la valida el esquema de 3.1): la minoría (total − forma mayoritaria) es ≥ 30 % o hay empate, **y** hay muestra mínima: total ≥ 5 y minoría ≥ 2. Si se cumple lo del 30 % pero falta muestra, `divided: false` y `lowSample: true`.
   - Con `lowSample: true` no hay pregunta: conventions.md da los conteos tal cual, con la nota "muestra chica", y sigue la mayoría si la hay (o lo del archivo que se toca si empatan).
   - Si nadie responde (ejecución sin usuario presente), la convención queda en conventions.md como "pendiente de confirmar", con ambas opciones y su evidencia; nunca se inventa la respuesta.
   - CA: con una convención 70/30 (p. ej. 7/3) hay pregunta; con 90/10 no la hay y gana la mayoría; con 2/1 (`lowSample`, como `providedIn` de ng12-modules) no la hay y se anota "muestra chica"; sin usuario presente, la 7/3 queda "pendiente de confirmar" con las dos opciones, sus conteos y archivos.
-- [ ] 6.5 Drift de docs: `/ao:init` y `/ao:sync` leen la documentación propia del repo (CLAUDE.md, AGENTS.md, skills en `.claude/skills/`, `.agent/`, `.gemini/`…) y contrastan cada afirmación verificable con el índice (rutas, nombres de exports, firmas de clases base, registro de íconos, rutas de la app, convenciones). El código manda (principio 9).
+- [ ] 6.5 Drift de docs: `/ao:init` y `/ao:sync` leen la documentación propia del repo (CLAUDE.md, AGENTS.md, skills en `.claude/skills/`, `.agent/`, `.gemini/`…) y contrastan cada afirmación verificable con el índice (rutas, nombres de exports, firmas de clases base, registro de íconos, rutas de la app, convenciones). El código manda (principio 9). — **adelantada a M-fast** (se completa conectando /ao:init al índice cuando exista M4)
   - Las contradicciones van a `docDrift[]` / la sección "Contradicciones" de conventions.md, cada una con lo que dice el documento (archivo:línea), lo que muestra el código (evidencia) y qué documento corregir. Nunca se corrige el documento del equipo sin pedirlo.
   - El escáner solo aporta lo determinista (rutas y símbolos citados en los docs que no existen en el repo); el contraste semántico lo hace el agente.
   - CA: en un fixture con un CLAUDE.md que cita una ruta inexistente y un nombre de export viejo, salen las 2 contradicciones con su evidencia; las afirmaciones que coinciden con el código no salen.
 
 ## M7 — Adaptador Claude Code + install
-- [ ] 7.1 Generar un plugin `ao` (`.claude-plugin/plugin.json`, `commands/init.md`) → `/ao:init`.
-- [ ] 7.2 `marketplace.json` en el repo, para instalarlo vía `/plugin marketplace add`.
+- [ ] 7.1 Generar un plugin `ao` (`.claude-plugin/plugin.json`, `commands/init.md`) → `/ao:init`. — **adelantada a M-fast** (se completa conectando /ao:init al índice cuando exista M4)
+- [ ] 7.2 `marketplace.json` en el repo, para instalarlo vía `/plugin marketplace add`. — **adelantada a M-fast** (se completa conectando /ao:init al índice cuando exista M4)
 - [ ] 7.3 `ao install --agents claude` en un repo destino.
   - CA: en el proyecto B, `/ao:init` aparece y genera `.ao/`.
 
@@ -169,7 +182,7 @@ Nota: los conteos de los `expected.json` de M2 salieron de grep. Si un detector 
 - [ ] 9.2 README, licencia y changeset; `npm publish` de `ao-kit@0.1.0`.
 
 ## Backlog (después de 0.1)
-- [ ] /ao:view (prompt + Figma MCP → plan de reutilización → genera)
+- [ ] /ao:view (prompt + Figma MCP → plan de reutilización → genera) — **primera versión en M-fast (F.4)**
 - [ ] /ao:review · /ao:component · /ao:explain · /ao:migrate · /ao:api
 - [ ] MCP propio del catálogo (`ao.find_component`, `ao.get_card`)
 - [ ] scanner-react · scanner-vue
