@@ -91,6 +91,10 @@ Al terminar cada tarea (o cada bloque lógico de cambios), **no hagas commit**. 
    - Nunca incluyas líneas Co-Authored-By, "Generated with Claude Code" ni ninguna atribución a Claude o Anthropic en mensajes de commit o PR.
 3. Si los cambios mezclan cosas distintas, propón **varios commits** separados, cada uno con sus archivos y su mensaje.
 4. Siempre entrega los commits como un script .git/AO_COMMITS.sh que Fran ejecuta; nunca como comandos largos en el chat.
+   - Fran usa PowerShell en Windows, donde `bash` apunta a WSL (no instalado). La primera línea del script es un comentario con la forma de ejecutarlo, y en los resúmenes se indica siempre así:
+     ```powershell
+     & "C:\Program Files\Git\bin\bash.exe" .git/AO_COMMITS.sh
+     ```
 
 ## Cómo trabajar una tarea
 1. Leer la tarea en TASKS.md y su criterio de aceptación.
